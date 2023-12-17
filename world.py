@@ -4,6 +4,7 @@ from actors import Mario
 class World:
     def __init__(self):
         self.actors = []
+        self.mario = None
         self.screen = None
         self.ground_objects = []
 
@@ -16,9 +17,12 @@ class World:
     def init_ground(self):
         ground_rect = pygame.Rect(0, 400, 800, 200)
         self.ground_objects.append(ground_rect)
+        ground_rect = pygame.Rect(500, 100, 100, 200)
+        self.ground_objects.append(ground_rect)
 
     def init_actors(self):
-        self.add_actor(Mario(50, 50))
+        self.mario = Mario(50, 50)
+        self.add_actor(self.mario)
 
     def add_actor(self, actor):
         self.actors.append(actor)
@@ -30,12 +34,17 @@ class World:
     def draw_actors(self):
         for actor in self.actors:
             actor.draw(self.screen)
-    
+
     def handle_collision(self):
         for actor in self.actors:
-            for ground in self.ground_objects:
-                if actor.rect.colliderect(ground):
-                    actor.handle_collision(ground)
+            if isinstance(actor, Mario):
+                continue
+            if actor.rectangle.colliderect(self.mario.rectangle):
+                self.mario.handle_collision(actor.rectangle)
+
+        for ground in self.ground_objects:
+            if self.mario.rectangle.colliderect(ground):
+                self.mario.handle_collision(ground)
 
     def draw_gorund(self):
         for ground in self.ground_objects:

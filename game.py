@@ -16,5 +16,6 @@ if __name__ == '__main__':
     while True:
         check_for_quit()
         world.move_actors()
+        world.handle_collision()
         world.draw()
         clock.tick(30)
