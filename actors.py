@@ -72,6 +72,8 @@ class Mario(Actor):
         self.right = True
 
     def move(self):
+        if self.jump_energy < 10:
+            self.jump_energy += 0.5
         self.x_prev = self.x
         self.y_prev = self.y
 
