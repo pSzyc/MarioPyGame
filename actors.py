@@ -1,13 +1,28 @@
 import numpy as np
 from abc import ABC, abstractmethod
 import pygame
-
+import random
+from move import BackAndForthMoveStrategy, ChaseMoveStrategy, ControlMoveStrategy
 class Actor(ABC):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, filename):
         self._x = x
         self._y = y
         self._width = width
         self._height = height
+        self._filename = filename
+        self._image = None
+
+    @property
+    def filename(self):
+        return self._filename
+    
+    @property
+    def image(self):
+        return self._image
+    
+    @image.setter
+    def image(self, value):
+        self._image = value
 
     @property
     def x(self):
@@ -38,64 +53,94 @@ class Actor(ABC):
         return pygame.Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
     
     @abstractmethod
+    def on_turn(self, isRight):
+        pass
+
+    @abstractmethod
+    def init_image(self):
+        pass
+
+    @abstractmethod
+    def init_image(self):
+        pass
+
+    @abstractmethod
     def move(self):
         pass
 
     @abstractmethod
     def draw(self, screen):
         pass
-    10
+
     @abstractmethod
     def handle_collision(self, ground):
         pass
 
 class Ghost(Actor):
-    def __init__(self, x, y):
-        super().__init__(x, y)
-
-    def move(self):
-        pass
-    
-    def draw(self, screen):
-        pass
-
-class Mario(Actor):
-    def __init__(self, x, y, width=20, height=40):
-        super().__init__(x, y, width=width, height=height)
+    def __init__(self, x, y, width=40, height=40, filename = "mario_ghost.png"):
+        super().__init__(x, y, width=width, height=height, filename=filename)
+        self.image = self.init_image()
         self.speed_y = 0
-        self.shift_value = 5
-        self.jump_energy = 0
-        self.gravity = 1
-        image = pygame.image.load("mario.webp")
-        self.image = pygame.transform.scale(image, (self.width, self.height))
-        self.image.convert()
+        self.speed_x = 2.5
+        self.move_strategy = BackAndForthMoveStrategy(self)
         self.right = True
 
+    def init_image(self):
+        image = pygame.image.load(self.filename)
+        image = pygame.transform.scale(image, (self.width, self.height))
+        image.convert()
+        return image
+    
+    def on_turn(self, isRight):
+        self.right = isRight
+        self.image = pygame.transform.flip(self.image, True, False)
+
+    def handle_collision(self, ground):
+        # handle y collision       
+        if self.y + self.height / 2 > ground.top and self.y_prev + self.height / 2 <= ground.top:
+            self.y = ground.top - self.height / 2
+        elif self.y - self.height / 2 < ground.bottom and self.y_prev - self.height / 2 >= ground.bottom:
+            self.speed_y = 0
+            self.y = ground.bottom + self.height / 2
+
+        # handle x collision
+        if self.x + self.width / 2 > ground.left and self.x_prev + self.width / 2 <= ground.left:
+            self.x = ground.left - self.width / 2
+        elif self.x - self.width / 2 < ground.right and self.x_prev - self.width / 2 >= ground.right:
+            self.x  = ground.right + self.width / 2
+
     def move(self):
-        if self.jump_energy < 10:
-            self.jump_energy += 0.5
-        self.x_prev = self.x
-        self.y_prev = self.y
+        self.move_strategy.make_move()
 
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.x -= self.shift_value
-            if self.right:
-                self.right = False
-                self.image = pygame.transform.flip(self.image, True, False)
-        if keys[pygame.K_RIGHT]:
-            if not self.right:
-                self.right = True
-                self.image = pygame.transform.flip(self.image, True, False)
-            self.x += self.shift_value
-        if keys[pygame.K_UP]:
-            if self.jump_energy >= 10:
-                self.speed_y -= 10
-                self.jump_energy -= 10
-        
-        self.y += self.speed_y
-        self.speed_y += self.gravity
+    def draw(self, screen):
+        screen.blit(self.image, self.rectangle)
 
+class Mario(Actor):
+    def __init__(self, x, y, width=40, height=60, filename = "mario.webp"):
+        super().__init__(x, y, width=width, height=height, filename=filename)
+        self.speed_y = 0
+        self.speed_x = 5
+        self.image = self.init_image()
+        self.right = True
+        self.move_strategy = ControlMoveStrategy(self)
+        self.jump_energy = 0
+
+    def init_image(self):
+        image = pygame.image.load(self.filename)
+        image = pygame.transform.scale(image, (self.width, self.height))
+        image.convert()
+        return image
+    
+    def on_turn(self, isRight):
+        if self.right != isRight:
+            self.right = not self.right
+            self.image = pygame.transform.flip(self.image, True, False)
+    
+    def draw(self, screen):
+        screen.blit(self.image, self.rectangle)
+
+    def move(self):
+        self.move_strategy.make_move()
 
     def handle_collision(self, ground):
         # handle y collision       
@@ -106,10 +151,12 @@ class Mario(Actor):
         elif self.y - self.height / 2 < ground.bottom and self.y_prev - self.height / 2 >= ground.bottom:
             self.speed_y = 0
             self.y = ground.bottom + self.height / 2
+
         # handle x collision
         if self.x + self.width / 2 > ground.left and self.x_prev + self.width / 2 <= ground.left:
             self.x = ground.left - self.width / 2
         elif self.x - self.width / 2 < ground.right and self.x_prev - self.width / 2 >= ground.right:
             self.x  = ground.right + self.width / 2
+    
     def draw(self, screen):
         screen.blit(self.image, self.rectangle)
