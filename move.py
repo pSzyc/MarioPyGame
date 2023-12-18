@@ -1,71 +1,53 @@
 from abc import ABC, abstractmethod
 import pygame
+
 class AbstractMoveStrategy(ABC):
-    def __init__(self, actor):
-        self._actor = actor
-    
-    @property
-    def actor(self):
-        return self._actor
+    def __init__(self):
+        pass
 
     @abstractmethod
-    def make_move(self):
+    def propose_move(self):
         pass
 
 
 class ControlMoveStrategy(AbstractMoveStrategy):
-    def __init__(self, actor):
-        super().__init__(actor)
 
-    def make_move(self):
-        if self.actor.jump_energy < 10:
-            self.actor.jump_energy += 0.5
+    def __init__(self):
+        super().__init__()
 
-        self.actor.x_prev = self.actor.x
-        self.actor.y_prev = self.actor.y
-        
+    def propose_move(self, actor):
+    
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            self.actor.speed_x = -5
-            self.actor.on_turn(isRight = False)
-
+            actor.on_turn(isRight = False)
         if keys[pygame.K_RIGHT]:
-            self.actor.speed_x = 5
-            self.actor.on_turn(isRight = True)
-                
+            actor.on_turn(isRight = True)
         if keys[pygame.K_UP]:
-            if self.actor.jump_energy >= 10:
-                self.actor.speed_y -= self.actor.jump_energy
-                self.actor.jump_energy = 0
+            actor.jump()
         
-        self.actor.y += self.actor.speed_y
-        self.actor.x += self.actor.speed_x
-
-    def gravity(self):
-        self.actor.speed_y += 1
+        x_new = actor.y + actor.speed_y
+        y_new = actor.x + actor.speed_x
+        
+        return x_new, y_new
 
 
 class BackAndForthMoveStrategy(AbstractMoveStrategy):
-    def __init__(self, actor, time_swap = 50, swap_axis = 'x'):
-        super().__init__(actor)
-        self._direction = 1
+    def __init__(self, time_swap = 50):
+        super().__init__()
         self.timer = time_swap
         self.time_swap = time_swap
-        self.swap_axis = swap_axis
 
-    def make_move(self):
+    def propose_move(self, actor):
         self.timer -= 1
         if self.timer == 0:
                 self.timer = self.time_swap
-                if self.swap_axis == 'x':
-                    self.actor.speed_x *= -1
-                else:
-                    self.actor.speed_y *= -1
-                self.actor.on_turn(isRight = not self.actor.right)
-        self.actor.x_prev = self.actor.x
-        self.actor.y_prev = self.actor.y
-        self.actor.x += self.actor.speed_x
-        self.actor.y += self.actor.speed_y        
+                actor.on_turn(isRight = not actor.right)
+        
+        x_new = actor.y + actor.speed_y
+        y_new = actor.x + actor.speed_x
+
+        return x_new, y_new 
+
 class ChaseMoveStrategy(AbstractMoveStrategy):
     def __init__(self, actor):
         super().__init__(actor)
