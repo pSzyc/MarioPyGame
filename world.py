@@ -1,5 +1,7 @@
 import pygame
 from actors import Mario, Ghost
+from move import *
+from itertools import combinations
 
 GREEN = (34, 139, 34)
 
@@ -45,6 +47,7 @@ class World:
         self.mario = None
         self.screen = None
         self.ground_objects = []
+        self._gravity = 1
 
     def initalize(self):
         pygame.init()
@@ -57,9 +60,9 @@ class World:
         self.add_ground(ground(400, 300, 400, 300))
 
     def init_actors(self):
-        self.mario = Mario(50, 50)
+        self.mario = Mario(50, 50, 0, 0, ControlMoveStrategy)
         self.add_actor(self.mario)
-        self.add_actor(Ghost(500, 100))
+        self.add_actor(Ghost(500, 100, 5, 0, BackAndForthMoveStrategy))
 
     def add_ground(self, ground):
         self.ground_objects.append(ground)
@@ -76,16 +79,19 @@ class World:
             actor.draw(self.screen)
 
     def handle_collision(self):
-        for actor in self.actors:
-            if isinstance(actor, Mario):
-                continue
-            if actor.rectangle.colliderect(self.mario.rectangle):
-                self.mario.handle_collision(actor.rectangle)
+        for actor1, actor2 in combinations(self.actors, 2):
+            if actor1.rectangle.colliderect(actor2.rectangle):
+                actor1.handle_collision(actor2.rectangle)
+                actor2.handle_collision(actor1.rectangle)
 
         for actor in self.actors:
             for ground in self.ground_objects:
                 if actor.rectangle.colliderect(ground.rectangle):
                     actor.handle_collision(ground.rectangle)
+
+    def gravity(self):
+        for actor in self.actors:
+            actor.gravity(self._gravity)
 
     def draw_gorund(self):
         for ground in self.ground_objects:
