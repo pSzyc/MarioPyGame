@@ -2,7 +2,7 @@ import pygame
 from actors import Mario, Ghost
 from move import *
 from itertools import combinations
-
+from actors_factory import *
 GREEN = (34, 139, 34)
 
 class ground:
@@ -60,9 +60,12 @@ class World:
         self.add_ground(ground(400, 300, 400, 300))
 
     def init_actors(self):
-        self.mario = Mario(50, 50, 0, 0, ControlMoveStrategy)
+        mario_maker = MarioMaker()
+        ghost_maker = GhostMaker()
+        self.mario = mario_maker.create_actor(100, 100, 5, 0, 40, 60)
+        ghost = ghost_maker.create_actor(500, 100, 5, 0, 'chase', 40, 40, mario=self.mario)
         self.add_actor(self.mario)
-        self.add_actor(Ghost(500, 100, 5, 0, BackAndForthMoveStrategy))
+        self.add_actor(ghost)
 
     def add_ground(self, ground):
         self.ground_objects.append(ground)

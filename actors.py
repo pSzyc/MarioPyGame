@@ -1,17 +1,16 @@
 import numpy as np
 from abc import ABC, abstractmethod
 import pygame
-
+from move import MoveStrategy
 class Actor(ABC):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, width, height, filename):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, width, height, image):
         self._x = x
         self._y = y
         self._speed_x = speed_x
         self._speed_y = speed_y
         self._width = width
         self._height = height
-        self._filename = filename
-        self._image = None
+        self._image = image
         self._move_strategy = move_strategy
 
     @property
@@ -37,10 +36,6 @@ class Actor(ABC):
     @speed_y.setter
     def speed_y(self, value):
         self._speed_y = value
-
-    @property
-    def filename(self):
-        return self._filename
     
     @property
     def image(self):
@@ -86,14 +81,6 @@ class Actor(ABC):
         pass
 
     @abstractmethod
-    def init_image(self):
-        pass
-
-    @abstractmethod
-    def init_image(self):
-        pass
-
-    @abstractmethod
     def move(self):
         pass
 
@@ -106,21 +93,17 @@ class Actor(ABC):
         pass
 
 class Ghost(Actor):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, width=40, height=40, filename = "mario_ghost.png"):
-        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, filename)
-        self.image = self.init_image()
-        self.move_strategy = move_strategy(self)
+    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=40):
+        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
+        self.speed = 2.5
+        self.move_strategy = move_strategy
         self.right = True
-
-    def init_image(self):
-        image = pygame.image.load(self.filename)
-        image = pygame.transform.scale(image, (self.width, self.height))
-        image.convert()
-        return image
     
     def on_turn(self, isRight):
-        self.right = isRight
-        self.image = pygame.transform.flip(self.image, True, False)
+        if self.right != isRight:
+            self.right = not self.right
+            self.image = pygame.transform.flip(self.image, True, False)
+        self.speed_x = 2 * (isRight - 0.5) * self.speed
 
     def handle_collision(self, ground):
         # handle y collision       
@@ -138,37 +121,45 @@ class Ghost(Actor):
             self.x  = ground.right + self.width / 2
 
     def move(self):
-        self.move_strategy.make_move()
+        x_new, y_new = self.move_strategy.propose_move(self)
+        self.x_prev = self.x
+        self.y_prev = self.y
+        self.x = x_new
+        self.y = y_new
 
     def draw(self, screen):
         screen.blit(self.image, self.rectangle)
 
 class Mario(Actor):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, width=40, height=60, filename = "mario.webp"):
-        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, filename)
-        self.speed_y = 0
-        self.speed_x = 5
-        self.image = self.init_image()
+    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=60):
+        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
+        self.speed = 5
         self.right = True
-        self.move_strategy = move_strategy(self)
+        self.move_strategy = move_strategy
         self.jump_energy = 0
-
-    def init_image(self):
-        image = pygame.image.load(self.filename)
-        image = pygame.transform.scale(image, (self.width, self.height))
-        image.convert()
-        return image
     
     def on_turn(self, isRight):
         if self.right != isRight:
             self.right = not self.right
             self.image = pygame.transform.flip(self.image, True, False)
+        self.speed_x = 2 * (isRight - 0.5) * self.speed
     
     def draw(self, screen):
         screen.blit(self.image, self.rectangle)
 
+    def jump(self):
+        if self.jump_energy >= 10:
+            self.speed_y -= self.jump_energy
+            self.jump_energy = 0
+
     def move(self):
-        self.move_strategy.make_move()
+        if self.jump_energy < 10:
+            self.jump_energy += 0.5
+        x_new, y_new = self.move_strategy.propose_move(self)
+        self.x_prev = self.x
+        self.y_prev = self.y
+        self.x = x_new
+        self.y = y_new
         
     def handle_collision(self, ground):
         # handle y collision       
@@ -180,7 +171,6 @@ class Mario(Actor):
         elif self.y - self.height / 2 < ground.bottom and self.y_prev - self.height / 2 >= ground.bottom:
             self.speed_y = 0
             self.y = ground.bottom + self.height / 2
-
         # handle x collision
         if self.x + self.width / 2 > ground.left and self.x_prev + self.width / 2 <= ground.left:
             self.x = ground.left - self.width / 2
