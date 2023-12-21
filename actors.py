@@ -2,15 +2,13 @@ import numpy as np
 from abc import ABC, abstractmethod
 import pygame
 from move import MoveStrategy
-class Actor(ABC):
+from objects import GameObject
+
+class Actor(GameObject):
     def __init__(self, x, y, speed_x, speed_y, move_strategy, width, height, image):
-        self._x = x
-        self._y = y
+        super().__init__(x, y, width, height, image)
         self._speed_x = speed_x
         self._speed_y = speed_y
-        self._width = width
-        self._height = height
-        self._image = image
         self._move_strategy = move_strategy
 
     @property
@@ -37,42 +35,6 @@ class Actor(ABC):
     def speed_y(self, value):
         self._speed_y = value
     
-    @property
-    def image(self):
-        return self._image
-    
-    @image.setter
-    def image(self, value):
-        self._image = value
-
-    @property
-    def x(self):
-        return self._x
-    
-    @x.setter
-    def x(self, value):
-        self._x = value
-
-    @property
-    def y(self):
-        return self._y
-    
-    @y.setter
-    def y(self, value):
-        self._y = value
-
-    @property
-    def width(self):
-        return self._width
-    
-    @property
-    def height(self):
-        return self._height
-
-    @property
-    def rectangle(self):
-        return pygame.Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
-    
     def gravity(self, gravity = 1):
         self.speed_y += gravity
     
@@ -82,10 +44,6 @@ class Actor(ABC):
 
     @abstractmethod
     def move(self):
-        pass
-
-    @abstractmethod
-    def draw(self, screen):
         pass
 
     @abstractmethod

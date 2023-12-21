@@ -9,7 +9,6 @@ class MoveStrategy(ABC):
     def propose_move(self):
         pass
 
-
 class ControlMoveStrategy(MoveStrategy):
     _instance = None
 

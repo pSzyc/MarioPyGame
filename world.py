@@ -47,6 +47,7 @@ class World:
         self.mario = None
         self.screen = None
         self.ground_objects = []
+        self.objects = []
         self._gravity = 1
 
     def initalize(self):
@@ -61,17 +62,29 @@ class World:
 
     def init_actors(self):
         mario_maker = MarioMaker()
+        coin_maker = CoinMaker()
+        cherry_maker = CherryMaker()
+        chest_maker = ChestMaker()
         ghost_maker = GhostMaker()
         self.mario = mario_maker.create_actor(100, 100, 5, 0, 40, 60)
         ghost = ghost_maker.create_actor(500, 100, 5, 0, 'chase', 40, 40, mario=self.mario)
+        coin = coin_maker.create_actor(400, 250, 40, 40)
+        cherry = cherry_maker.create_actor(500, 250, 40, 40)
+        chest = chest_maker.create_actor(600, 250, 40, 40)
         self.add_actor(self.mario)
         self.add_actor(ghost)
+        self.add_object(coin)
+        self.add_object(cherry)
+        self.add_object(chest)
 
     def add_ground(self, ground):
         self.ground_objects.append(ground)
 
     def add_actor(self, actor):
         self.actors.append(actor)
+    
+    def add_object(self, obj):
+        self.objects.append(obj)
 
     def move_actors(self):
         for actor in self.actors:
@@ -80,6 +93,8 @@ class World:
     def draw_actors(self):
         for actor in self.actors:
             actor.draw(self.screen)
+        for obj in self.objects:
+            obj.draw(self.screen)
 
     def handle_collision(self):
         for actor1, actor2 in combinations(self.actors, 2):
