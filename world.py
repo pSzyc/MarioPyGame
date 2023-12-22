@@ -1,54 +1,20 @@
 import pygame
-from actors import Mario, Ghost
 from move import *
 from itertools import combinations
 from actors_factory import *
-GREEN = (34, 139, 34)
+from events import EventDispatcher, EventManager
+from ground import ground
+from time import sleep
 
-class ground:
-    def __init__(self, x, y, width, height):
-        self._x = x
-        self._y = y
-        self._width = width
-        self._height = height
-    
-    @property
-    def x(self):
-        return self._x
-    
-    @property
-    def y(self):
-        return self._y
-    
-    @property
-    def width(self):
-        return self._width
-    
-    @property
-    def height(self):
-        return self._height
-
-    @property
-    def rectangle(self):
-        return pygame.Rect(self.x, self.y, self.width, self.height)
-    
-    def grass(self):
-        return pygame.Rect(self.x, self.y, self._width, 5)
-
-
-    def draw(self, screen):
-        # Draw the ground
-        pygame.draw.rect(screen, (139, 69, 19), self.rectangle)
-        pygame.draw.rect(screen, GREEN, self.grass())
-        
 class World:
     def __init__(self):
-        self.actors = []
         self.mario = None
         self.screen = None
         self.ground_objects = []
         self.objects = []
+        self.actors = []
         self._gravity = 1
+        self.event_dispatcher = EventDispatcher()
 
     def initalize(self):
         pygame.init()
@@ -73,16 +39,17 @@ class World:
         chest = chest_maker.create_actor(600, 250, 40, 40)
         self.add_actor(self.mario)
         self.add_actor(ghost)
+        self.add_object(ghost)
         self.add_object(coin)
         self.add_object(cherry)
         self.add_object(chest)
 
     def add_ground(self, ground):
         self.ground_objects.append(ground)
-
+    
     def add_actor(self, actor):
         self.actors.append(actor)
-    
+
     def add_object(self, obj):
         self.objects.append(obj)
 
@@ -97,15 +64,24 @@ class World:
             obj.draw(self.screen)
 
     def handle_collision(self):
-        for actor1, actor2 in combinations(self.actors, 2):
-            if actor1.rectangle.colliderect(actor2.rectangle):
-                actor1.handle_collision(actor2.rectangle)
-                actor2.handle_collision(actor1.rectangle)
+        event_manager = EventManager(self.objects)
+        for actor in self.actors:
+            if actor == self.mario:
+                continue
+            if self.mario.rectangle.colliderect(actor.rectangle):
+                event_manager.add_event(self.event_dispatcher.dispatch(self.mario, actor))
+        
+        for obj in self.objects:
+            if self.mario.rectangle.colliderect(obj.rectangle):
+                event_manager.add_event(self.event_dispatcher.dispatch(self.mario, obj))
 
         for actor in self.actors:
             for ground in self.ground_objects:
                 if actor.rectangle.colliderect(ground.rectangle):
-                    actor.handle_collision(ground.rectangle)
+                    event_manager.add_event(self.event_dispatcher.dispatch(actor, ground))
+        
+        event_manager.handle_events()
+
 
     def gravity(self):
         for actor in self.actors:
