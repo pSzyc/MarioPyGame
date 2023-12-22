@@ -9,6 +9,8 @@ class Actor(GameObject):
         super().__init__(x, y, width, height, image)
         self._speed_x = speed_x
         self._speed_y = speed_y
+        self.x_prev = x
+        self.y_prev = y
         self._move_strategy = move_strategy
         self._collision_handler = collision_handler
 
@@ -19,6 +21,10 @@ class Actor(GameObject):
     @collision_handler.setter
     def collision_handler(self, collision_handler):
         self._collision_handler = collision_handler
+    
+    @property
+    def prev_rectangle(self):
+        return pygame.Rect(self.x_prev - self.width / 2, self.y_prev - self.height / 2, self.width, self.height)
 
     @property
     def move_strategy(self):
@@ -92,7 +98,7 @@ class Mario(Actor):
         self.jump_energy = 0
         self.lifes = 3
         self.coins = 0
-    
+
     def on_turn(self, isRight):
         if self.right != isRight:
             self.right = not self.right
@@ -108,7 +114,6 @@ class Mario(Actor):
             self.jump_energy = 0
 
     def move(self):
-        print(self.jump_energy)
         if self.jump_energy < 10:
             self.jump_energy += 0.5
         x_new, y_new = self.move_strategy.propose_move(self)

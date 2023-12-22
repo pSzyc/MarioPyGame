@@ -13,6 +13,44 @@ class Event(ABC):
     def handle(self):
         pass
 
+class GroundCollisionEvent(Event):
+    @property
+    def actor(self):
+        return self.obj1
+    
+    @property
+    def ground(self):
+        return self.obj2.rectangle
+
+    def hit_from_bottom(self):
+        self.actor.y = self.ground.top - self.actor.height / 2
+        self.actor.speed_y = 0
+
+    def hit_from_top(self):
+        self.actor.y = self.ground.bottom + self.actor.height / 2
+        self.actor.speed_y = 0
+
+    def hit_from_left(self):
+        self.actor.x = self.ground.left - self.actor.width / 2
+        self.actor.speed_x = 0
+
+    def hit_from_right(self):
+        self.actor.x = self.ground.right + self.actor.width / 2
+        self.actor.speed_x = 0
+
+    def handle(self):
+        if (self.actor.rectangle.bottom > self.ground.top) and (self.actor.prev_rectangle.bottom <= self.ground.top):
+            self.hit_from_bottom()
+
+        elif (self.actor.rectangle.top < self.ground.bottom) and (self.actor.prev_rectangle.top >= self.ground.bottom):
+            self.hit_from_top()
+        
+        if (self.actor.rectangle.right > self.ground.left) and (self.actor.prev_rectangle.right <= self.ground.left):
+            self.hit_from_left()
+
+        elif (self.actor.rectangle.left < self.ground.right) and (self.actor.prev_rectangle.left >= self.ground.right):
+            self.hit_from_right()
+
 class EventDispatcher:
     def __init__(self):
         mario_event_dict = {
@@ -20,10 +58,9 @@ class EventDispatcher:
             Coin.__name__: MarioHitsCoinEvent,
             Cherry.__name__: MarioHitsCherryEvent,
             Chest.__name__: MarioHitsChestEvent,
-            Ghost.__name__: MarioHitGhostEvent
         }
         ghost_event_dict = {
-            ground.__name__: GhostHitsGroundEvent,
+            ground.__name__: GroundCollisionEvent,
         }
         self.nested_event_dict = {
             Mario.__name__: mario_event_dict,
@@ -50,22 +87,20 @@ class EventManager:
     def handle_events(self):
         for event in self.events:
             actor = event.handle()
-            if event.handle():
+            if actor:
                 self.actors.remove(actor)
 
-class MarioHitsGroundEvent(Event):    
-    def handle(self):
-        self.obj1.handle_collision(self.obj2.rectangle)
-        if self.obj1.speed_x > 0.1:
-            self.obj1.speed_x -= 0.1
-        elif self.obj1.speed_x < -0.1:
-            self.obj1.speed_x += 0.1
-        else:
-            self.obj1.speed_x = 0
 
-class GhostHitsGroundEvent(Event):
-    def handle(self):
-        self.obj1.handle_collision(self.obj2.rectangle)
+class MarioHitsGroundEvent(GroundCollisionEvent):    
+    def hit_from_bottom(self):
+        super().hit_from_bottom()
+        self.actor.jump_energy = 20
+        if self.actor.speed_x > 0.5:
+            self.actor.speed_x -= 0.5
+        elif self.actor.speed_x < -0.5:
+            self.actor.speed_x += 0.5
+        else:
+            self.actor.speed_x = 0
 
 class MarioHitsCoinEvent(Event):    
     def handle(self):
@@ -81,20 +116,3 @@ class MarioHitsChestEvent(Event):
     def handle(self):
         self.obj1.coins += 10
         return self.obj2
-
-class MarioHitGhostEvent(Event):
-    def handle(self):
-        self.obj1.handle_collision(self.obj2.rectangle)
-        self.obj2.handle_collision(self.obj1.rectangle)
-        if self.obj2 is not None:        
-            self.push_mario()
-            return 
-
-    def push_mario(self):
-        x_d = self.obj1.x - self.obj2.x
-        y_d = self.obj1.y - self.obj2.y
-        norm = sqrt((x_d) ** 2 + (y_d) ** 2)
-        x_d = x_d / norm
-        y_d = y_d / norm
-        self.obj1.speed_x = 10 * x_d
-        self.obj1.speed_y = 10 * y_d
