@@ -13,7 +13,7 @@ class World:
         self.ground_objects = []
         self.objects = []
         self.actors = []
-        self._gravity = 1
+        self._gravity = 1.5
         self.event_dispatcher = EventDispatcher()
 
     def initalize(self):
@@ -33,13 +33,12 @@ class World:
         chest_maker = ChestMaker()
         ghost_maker = GhostMaker()
         self.mario = mario_maker.create_actor(100, 100, 5, 0, 40, 60)
-        ghost = ghost_maker.create_actor(500, 100, 5, 0, 'chase', 40, 40, mario=self.mario)
+        ghost = ghost_maker.create_actor(500, 100, 5, 0, 'back_and_forth', 40, 40, mario=self.mario)
         coin = coin_maker.create_actor(400, 250, 40, 40)
         cherry = cherry_maker.create_actor(500, 250, 40, 40)
         chest = chest_maker.create_actor(600, 250, 40, 40)
         self.add_actor(self.mario)
-        #self.add_actor(ghost)
-        #self.add_object(ghost)
+        self.add_actor(ghost)
         self.add_object(coin)
         self.add_object(cherry)
         self.add_object(chest)
@@ -64,7 +63,7 @@ class World:
             obj.draw(self.screen)
 
     def handle_collision(self):
-        event_manager = EventManager(self.objects)
+        event_manager = EventManager(self.objects, self.actors)
         for actor in self.actors:
             if actor == self.mario:
                 continue

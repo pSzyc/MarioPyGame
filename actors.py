@@ -109,13 +109,13 @@ class Mario(Actor):
         screen.blit(self.image, self.rectangle)
 
     def jump(self):
-        if self.jump_energy >= 10:
+        if self.jump_energy >= 20:
             self.speed_y -= self.jump_energy
             self.jump_energy = 0
 
     def move(self):
-        if self.jump_energy < 10:
-            self.jump_energy += 0.5
+        if self.jump_energy < 20:
+            self.jump_energy += 1
         x_new, y_new = self.move_strategy.propose_move(self)
         self.x_prev = self.x
         self.y_prev = self.y

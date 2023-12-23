@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
 from math import sqrt
-from actors import Mario, Ghost
+from actors import Mario, Ghost, Actor
 from objects import Coin, Cherry, Chest
 from ground import ground
+from objects import GameObject
 
 class Event(ABC):
     def __init__(self, obj1, obj2):
@@ -13,43 +14,40 @@ class Event(ABC):
     def handle(self):
         pass
 
-class GroundCollisionEvent(Event):
+class CollisionEvent(Event):
     @property
     def actor(self):
         return self.obj1
     
     @property
-    def ground(self):
+    def object(self):
         return self.obj2.rectangle
 
     def hit_from_bottom(self):
-        self.actor.y = self.ground.top - self.actor.height / 2
+        self.actor.y = self.object.top - self.actor.height / 2
         self.actor.speed_y = 0
 
     def hit_from_top(self):
-        self.actor.y = self.ground.bottom + self.actor.height / 2
+        self.actor.y = self.object.bottom + self.actor.height / 2
         self.actor.speed_y = 0
 
     def hit_from_left(self):
-        self.actor.x = self.ground.left - self.actor.width / 2
+        self.actor.x = self.object.left - self.actor.width / 2
         self.actor.speed_x = 0
 
     def hit_from_right(self):
-        self.actor.x = self.ground.right + self.actor.width / 2
+        self.actor.x = self.object.right + self.actor.width / 2
         self.actor.speed_x = 0
 
     def handle(self):
-        if (self.actor.rectangle.bottom > self.ground.top) and (self.actor.prev_rectangle.bottom <= self.ground.top):
-            self.hit_from_bottom()
-
-        elif (self.actor.rectangle.top < self.ground.bottom) and (self.actor.prev_rectangle.top >= self.ground.bottom):
-            self.hit_from_top()
-        
-        if (self.actor.rectangle.right > self.ground.left) and (self.actor.prev_rectangle.right <= self.ground.left):
-            self.hit_from_left()
-
-        elif (self.actor.rectangle.left < self.ground.right) and (self.actor.prev_rectangle.left >= self.ground.right):
-            self.hit_from_right()
+        self.bottom = (self.actor.rectangle.bottom > self.object.top) and (self.actor.prev_rectangle.bottom <= self.object.top)
+        self.top = (self.actor.rectangle.top < self.object.bottom) and (self.actor.prev_rectangle.top >= self.object.bottom)
+        self.left = (self.actor.rectangle.right > self.object.left) and (self.actor.prev_rectangle.right <= self.object.left)
+        self.right = (self.actor.rectangle.left < self.object.right) and (self.actor.prev_rectangle.left >= self.object.right)
+        if self.top: self.hit_from_top()
+        if self.bottom: self.hit_from_bottom()
+        if self.left: self.hit_from_left()
+        if self.right: self.hit_from_right()
 
 class EventDispatcher:
     def __init__(self):
@@ -58,9 +56,10 @@ class EventDispatcher:
             Coin.__name__: MarioHitsCoinEvent,
             Cherry.__name__: MarioHitsCherryEvent,
             Chest.__name__: MarioHitsChestEvent,
+            Ghost.__name__: MarioHitsGhostEvent
         }
         ghost_event_dict = {
-            ground.__name__: GroundCollisionEvent,
+            ground.__name__: CollisionEvent,
         }
         self.nested_event_dict = {
             Mario.__name__: mario_event_dict,
@@ -77,30 +76,40 @@ class EventDispatcher:
     
 
 class EventManager:
-    def __init__(self, actors):
+    def __init__(self, objects, actors):
         self.events = []
         self.actors = actors
+        self.objects = objects
 
     def add_event(self, event):
         self.events.append(event)
 
     def handle_events(self):
         for event in self.events:
-            actor = event.handle()
-            if actor:
-                self.actors.remove(actor)
+            obj = event.handle()
+            if isinstance(obj, Actor):
+                self.actors.remove(obj)
+            elif isinstance(obj, GameObject):
+                self.objects.remove(obj)
 
 
-class MarioHitsGroundEvent(GroundCollisionEvent):    
+class MarioHitsGroundEvent(CollisionEvent):    
     def hit_from_bottom(self):
         super().hit_from_bottom()
-        self.actor.jump_energy = 20
+        self.actor.jump_energy = 27.5
         if self.actor.speed_x > 0.5:
             self.actor.speed_x -= 0.5
         elif self.actor.speed_x < -0.5:
             self.actor.speed_x += 0.5
         else:
             self.actor.speed_x = 0
+
+class MarioHitsGhostEvent(CollisionEvent):
+    def handle(self):
+        super().handle()
+        if self.bottom:
+            return self.obj2
+        
 
 class MarioHitsCoinEvent(Event):    
     def handle(self):
