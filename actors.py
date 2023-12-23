@@ -88,8 +88,9 @@ class Mario(Actor):
         if self.right != isRight:
             self.right = not self.right
             self.image = pygame.transform.flip(self.image, True, False)
-        self.speed_x = 2 * (isRight - 0.5) * self.speed
-    
+        self.speed_x += 2 * (isRight - 0.5) * self.speed
+        self.speed_x = np.clip(self.speed_x, -self.speed, self.speed)   
+
     def draw(self, screen):
         # Draw Mario image
         screen.blit(self.image, self.rectangle)

@@ -8,6 +8,10 @@ class ground:
         self._y = y
         self._width = width
         self._height = height
+        self.texture_width = 40
+        self.texture_height = 40  
+        self.texture = pygame.image.load("ground.png")
+        self.texture = pygame.transform.scale(self.texture, (self.texture_width, self.texture_height))
     
     @property
     def x(self):
@@ -30,10 +34,13 @@ class ground:
         return pygame.Rect(self.x, self.y, self.width, self.height)
     
     def grass(self):
-        return pygame.Rect(self.x, self.y, self._width, 5)
+        return pygame.Rect(self.x, self.y, self._width, 10)
 
 
     def draw(self, screen):
         # Draw the ground
-        pygame.draw.rect(screen, (139, 69, 19), self.rectangle)
+        for x in range(self.x, self.x + self.width, self.texture.get_width()):
+            for y in range(self.y, self.y + self.height, self.texture.get_height()):
+                screen.blit(self.texture, (x, y))
+                # Draw grass
         pygame.draw.rect(screen, GREEN, self.grass())

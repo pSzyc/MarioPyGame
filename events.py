@@ -112,6 +112,8 @@ class MarioHitsGhostEvent(CollisionEvent):
         else:
             self.actor.lifes -= 1
             self.push_mario()
+            if self.actor.lifes == 0:
+                return self.actor
     
     def push_mario(self):
         dx = self.actor.x - self.obj2.x

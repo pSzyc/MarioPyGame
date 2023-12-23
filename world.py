@@ -91,7 +91,7 @@ class World:
             ground.draw(self.screen)
 
     def draw(self):
-        self.screen.fill((50, 50, 128))  # Dark blue background color
+        self.screen.fill((150, 150, 200))  # Light blue background color
         self.draw_actors()
         self.draw_gorund()
         pygame.display.update()
