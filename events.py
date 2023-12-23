@@ -109,6 +109,16 @@ class MarioHitsGhostEvent(CollisionEvent):
         super().handle()
         if self.bottom:
             return self.obj2
+        else:
+            self.actor.lifes -= 1
+            self.push_mario()
+    
+    def push_mario(self):
+        dx = self.actor.x - self.obj2.x
+        dy = self.actor.y - self.obj2.y
+        d = sqrt(dx**2 + dy**2)
+        self.actor.speed_x = dx / d * 10
+        self.actor.speed_y = dy / d * 10
         
 
 class MarioHitsCoinEvent(Event):    

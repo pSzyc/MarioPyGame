@@ -5,23 +5,14 @@ from move import MoveStrategy
 from objects import GameObject
 
 class Actor(GameObject):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, collision_handler, width, height, image):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, width, height, image):
         super().__init__(x, y, width, height, image)
         self._speed_x = speed_x
         self._speed_y = speed_y
         self.x_prev = x
         self.y_prev = y
         self._move_strategy = move_strategy
-        self._collision_handler = collision_handler
 
-    @property
-    def collision_handler(self):
-        return self._collision_handler
-    
-    @collision_handler.setter
-    def collision_handler(self, collision_handler):
-        self._collision_handler = collision_handler
-    
     @property
     def prev_rectangle(self):
         return pygame.Rect(self.x_prev - self.width / 2, self.y_prev - self.height / 2, self.width, self.height)
@@ -61,13 +52,9 @@ class Actor(GameObject):
     def move(self):
         pass
 
-    @abstractmethod
-    def handle_collision(self, ground):
-        pass
-
 class Ghost(Actor):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, collision_handler, image, width=40, height=40):
-        super().__init__(x, y, speed_x, speed_y, move_strategy, collision_handler, width, height, image)
+    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=40):
+        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
         self.speed = 2.5
         self.right = True
     
@@ -77,8 +64,6 @@ class Ghost(Actor):
             self.image = pygame.transform.flip(self.image, True, False)
         self.speed_x = 2 * (isRight - 0.5) * self.speed
 
-    def handle_collision(self, ground):
-        self.collision_handler.handle_collision(self, ground)
 
     def move(self):
         x_new, y_new = self.move_strategy.propose_move(self)
@@ -91,8 +76,8 @@ class Ghost(Actor):
         screen.blit(self.image, self.rectangle)
 
 class Mario(Actor):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, collision_handler, image, width=40, height=60):
-        super().__init__(x, y, speed_x, speed_y, move_strategy, collision_handler, width, height, image)
+    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=60):
+        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
         self.speed = 5
         self.right = True
         self.jump_energy = 0
@@ -106,7 +91,24 @@ class Mario(Actor):
         self.speed_x = 2 * (isRight - 0.5) * self.speed
     
     def draw(self, screen):
+        # Draw Mario image
         screen.blit(self.image, self.rectangle)
+        
+        # Draw lifes as hearts in left upper corner
+        heart_image = pygame.image.load("heart.png")
+        heart_width = 30
+        heart_height = 30
+        heart_image = pygame.transform.scale(heart_image, (heart_width, heart_height))
+        for i in range(self.lifes):
+            heart_rect = pygame.Rect(i * heart_width, 0, heart_width, heart_height)
+            screen.blit(heart_image, heart_rect)
+        
+        # Draw number of coins in right upper corner
+        font = pygame.font.Font(None, 35)
+        coins_text = font.render(f"Coins: {self.coins}", True, (255, 255, 255))
+        coins_rect = coins_text.get_rect()
+        coins_rect.topright = (screen.get_width(), 0)
+        screen.blit(coins_text, coins_rect)
 
     def jump(self):
         if self.jump_energy >= 20:
@@ -121,6 +123,3 @@ class Mario(Actor):
         self.y_prev = self.y
         self.x = x_new
         self.y = y_new
-        
-    def handle_collision(self, obj):
-        self.collision_handler.handle_collision(self, obj)
