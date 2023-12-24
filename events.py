@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from math import sqrt
 from actors import Mario, Ghost, Actor
 from objects import Coin, Cherry, Chest
-from ground import ground
+from ground import Ground
 from objects import GameObject
 
 class Event(ABC):
@@ -52,14 +52,14 @@ class CollisionEvent(Event):
 class EventDispatcher:
     def __init__(self):
         mario_event_dict = {
-            ground.__name__: MarioHitsGroundEvent,
+            Ground.__name__: MarioHitsGroundEvent,
             Coin.__name__: MarioHitsCoinEvent,
             Cherry.__name__: MarioHitsCherryEvent,
             Chest.__name__: MarioHitsChestEvent,
             Ghost.__name__: MarioHitsGhostEvent
         }
         ghost_event_dict = {
-            ground.__name__: CollisionEvent,
+            Ground.__name__: CollisionEvent,
         }
         self.nested_event_dict = {
             Mario.__name__: mario_event_dict,

@@ -3,8 +3,8 @@ from move import *
 from itertools import combinations
 from actors_factory import *
 from events import EventDispatcher, EventManager
-from ground import ground
 from time import sleep
+from initalize import FromStringInitalizer
 
 class World:
     def __init__(self):
@@ -19,29 +19,10 @@ class World:
     def initalize(self):
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
-        self.init_actors()
-        self.init_ground()
-
-    def init_ground(self):
-        self.add_ground(ground(0, 500, 400, 100))
-        self.add_ground(ground(400, 300, 400, 300))
-
-    def init_actors(self):
-        mario_maker = MarioMaker()
-        coin_maker = CoinMaker()
-        cherry_maker = CherryMaker()
-        chest_maker = ChestMaker()
-        ghost_maker = GhostMaker()
-        self.mario = mario_maker.create_actor(100, 100, 5, 0, 40, 60)
-        ghost = ghost_maker.create_actor(500, 100, 5, 0, 'back_and_forth', 40, 40, mario=self.mario)
-        coin = coin_maker.create_actor(400, 250, 40, 40)
-        cherry = cherry_maker.create_actor(500, 250, 40, 40)
-        chest = chest_maker.create_actor(600, 250, 40, 40)
-        self.add_actor(self.mario)
-        self.add_actor(ghost)
-        self.add_object(coin)
-        self.add_object(cherry)
-        self.add_object(chest)
+        with open('resources/board.txt', 'r') as f:
+            board = f.read()
+        initalizer = FromStringInitalizer(board)
+        initalizer.initalize(world=self)
 
     def add_ground(self, ground):
         self.ground_objects.append(ground)
@@ -56,11 +37,13 @@ class World:
         for actor in self.actors:
             actor.move()
     
-    def draw_actors(self):
+    def draw_scene(self):
         for actor in self.actors:
             actor.draw(self.screen)
         for obj in self.objects:
             obj.draw(self.screen)
+        for ground in self.ground_objects:
+            ground.draw(self.screen)
 
     def handle_collision(self):
         event_manager = EventManager(self.objects, self.actors)
@@ -81,17 +64,11 @@ class World:
         
         event_manager.handle_events()
 
-
     def gravity(self):
         for actor in self.actors:
             actor.gravity(self._gravity)
 
-    def draw_gorund(self):
-        for ground in self.ground_objects:
-            ground.draw(self.screen)
-
     def draw(self):
         self.screen.fill((150, 150, 200))  # Light blue background color
-        self.draw_actors()
-        self.draw_gorund()
+        self.draw_scene()
         pygame.display.update()

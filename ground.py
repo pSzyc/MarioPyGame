@@ -2,10 +2,12 @@ import pygame
 
 GREEN = (34, 139, 34)
 
-class ground:
+class Ground:
     def __init__(self, x, y, width, height):
         self._x = x
         self._y = y
+        width = width - width % 40
+        height = height - height % 40
         self._width = width
         self._height = height
         self.texture_width = 40
@@ -35,7 +37,6 @@ class ground:
     
     def grass(self):
         return pygame.Rect(self.x, self.y, self._width, 10)
-
 
     def draw(self, screen):
         # Draw the ground
