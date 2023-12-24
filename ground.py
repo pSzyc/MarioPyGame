@@ -10,7 +10,7 @@ class ground:
         self._height = height
         self.texture_width = 40
         self.texture_height = 40  
-        self.texture = pygame.image.load("ground.png")
+        self.texture = pygame.image.load("resources/ground.png")
         self.texture = pygame.transform.scale(self.texture, (self.texture_width, self.texture_height))
     
     @property

@@ -83,6 +83,7 @@ class Mario(Actor):
         self.jump_energy = 0
         self.lifes = 3
         self.coins = 0
+        self.stunned_time = 0
 
     def on_turn(self, isRight):
         if self.right != isRight:
@@ -96,7 +97,7 @@ class Mario(Actor):
         screen.blit(self.image, self.rectangle)
         
         # Draw lifes as hearts in left upper corner
-        heart_image = pygame.image.load("heart.png")
+        heart_image = pygame.image.load("resources/heart.png")
         heart_width = 30
         heart_height = 30
         heart_image = pygame.transform.scale(heart_image, (heart_width, heart_height))
@@ -117,9 +118,15 @@ class Mario(Actor):
             self.jump_energy = 0
 
     def move(self):
-        if self.jump_energy < 20:
-            self.jump_energy += 1
-        x_new, y_new = self.move_strategy.propose_move(self)
+        if self.stunned_time == 0:
+            if self.jump_energy < 20:
+                self.jump_energy += 1
+            x_new, y_new = self.move_strategy.propose_move(self)
+        else:
+            self.stunned_time -= 1
+            x_new = self.x + self.speed_x
+            y_new = self.y + self.speed_y
+
         self.x_prev = self.x
         self.y_prev = self.y
         self.x = x_new

@@ -121,6 +121,7 @@ class MarioHitsGhostEvent(CollisionEvent):
         d = sqrt(dx**2 + dy**2)
         self.actor.speed_x = dx / d * 10
         self.actor.speed_y = dy / d * 10
+        self.actor.stunned_time = 10
         
 
 class MarioHitsCoinEvent(Event):    
