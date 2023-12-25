@@ -48,7 +48,7 @@ class GhostMaker(ObjectMaker):
         return Ghost(self.x, self.y, self.speed_x, self.speed_y, move_strategy_instance, image, self.width, self.height)
 
 class CoinMaker(ObjectMaker):
-    def __init__(self, x, y, width, height, filename = 'resources/coin.png'):
+    def __init__(self, x, y, width = 40, height = 40, filename = 'resources/coin.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
@@ -61,7 +61,7 @@ class CoinMaker(ObjectMaker):
         return Coin(self.x, self.y, self.width, self.height, image)
     
 class CherryMaker(ObjectMaker):
-    def __init__(self, x, y, width, height, filename = 'resources/cherry.png'):
+    def __init__(self, x, y, width = 40, height = 40, filename = 'resources/cherry.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
@@ -74,7 +74,7 @@ class CherryMaker(ObjectMaker):
         return Cherry(self.x, self.y, self.width, self.height, image)
 
 class ChestMaker(ObjectMaker):
-    def __init__(self, x, y, width, height, filename = 'resources/chest.png'):
+    def __init__(self, x, y, width = 60, height = 40, filename = 'resources/chest.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
