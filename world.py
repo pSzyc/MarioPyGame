@@ -68,7 +68,22 @@ class World:
         for actor in self.actors:
             actor.gravity(self._gravity)
 
+    def camera_adjust(self):
+        x_offset = self.mario.x - self.mario.x_prev
+        y_offset = self.mario.y - self.mario.y_prev
+        for actor in self.actors:
+            actor.x -= x_offset
+            actor.y -= y_offset
+        for obj in self.objects:
+            obj.x -= x_offset
+            obj.y -= y_offset
+        for ground in self.ground_objects:
+            ground.x -= x_offset
+            ground.y -= y_offset
+
+
     def draw(self):
         self.screen.fill((150, 150, 200))  # Light blue background color
+        self.camera_adjust()
         self.draw_scene()
         pygame.display.update()

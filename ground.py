@@ -1,4 +1,5 @@
 import pygame
+from math import ceil
 
 GREEN = (34, 139, 34)
 
@@ -15,6 +16,7 @@ class Ground:
         self.texture = pygame.image.load("resources/ground.png")
         self.texture = pygame.transform.scale(self.texture, (self.texture_width, self.texture_height))
     
+
     @property
     def x(self):
         return self._x
@@ -22,7 +24,15 @@ class Ground:
     @property
     def y(self):
         return self._y
-    
+
+    @x.setter
+    def x(self, x):
+        self._x = x
+
+    @y.setter
+    def y(self, y):
+        self._y = y
+
     @property
     def width(self):
         return self._width
@@ -40,8 +50,8 @@ class Ground:
 
     def draw(self, screen):
         # Draw the ground
-        for x in range(self.x, self.x + self.width, self.texture.get_width()):
-            for y in range(self.y, self.y + self.height, self.texture.get_height()):
+        for x in range(self.rectangle.x, self.rectangle.x+ self.width, self.texture.get_width()):
+            for y in range(self.rectangle.y, self.rectangle.y + self.height, self.texture.get_height()):
                 screen.blit(self.texture, (x, y))
                 # Draw grass
         pygame.draw.rect(screen, GREEN, self.grass())
