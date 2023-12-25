@@ -15,7 +15,7 @@ class Actor(GameObject):
 
     @property
     def prev_rectangle(self):
-        return pygame.Rect(self.x_prev - self.width / 2, self.y_prev - self.height / 2, self.width, self.height)
+        return pygame.Rect(self.x_prev, self.y_prev, self.width, self.height)
 
     @property
     def move_strategy(self):

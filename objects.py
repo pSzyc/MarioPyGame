@@ -55,7 +55,7 @@ class GameObject(ABC):
 
     @property
     def rectangle(self):
-        return pygame.Rect(self.x - self.width / 2, self.y - self.height / 2, self.width, self.height)
+        return pygame.Rect(self.x, self.y, self.width, self.height)
 
 class Coin(GameObject):
     def __init__(self, x, y, width, height, image):

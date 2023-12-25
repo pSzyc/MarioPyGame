@@ -24,19 +24,19 @@ class CollisionEvent(Event):
         return self.obj2.rectangle
 
     def hit_from_bottom(self):
-        self.actor.y = self.object.top - self.actor.height / 2
+        self.actor.y = self.object.top - self.actor.height
         self.actor.speed_y = 0
 
     def hit_from_top(self):
-        self.actor.y = self.object.bottom + self.actor.height / 2
+        self.actor.y = self.object.bottom + self.actor.height
         self.actor.speed_y = 0
 
     def hit_from_left(self):
-        self.actor.x = self.object.left - self.actor.width / 2
+        self.actor.x = self.object.left - self.actor.width
         self.actor.speed_x = 0
 
     def hit_from_right(self):
-        self.actor.x = self.object.right + self.actor.width / 2
+        self.actor.x = self.object.right + self.actor.width
         self.actor.speed_x = 0
 
     def handle(self):
