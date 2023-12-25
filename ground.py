@@ -1,5 +1,4 @@
 import pygame
-from math import ceil
 from objects import GameObject
 GREEN = (34, 139, 34)
 

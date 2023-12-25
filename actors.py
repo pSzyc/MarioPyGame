@@ -78,7 +78,7 @@ class Ghost(Actor):
 class Mario(Actor):
     def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=60):
         super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
-        self.speed = 5
+        self.speed = 7.5
         self.right = True
         self.jump_energy = 0
         self.lifes = 3

@@ -14,7 +14,7 @@ class ObjectMaker(ABC):
         pass
 
 class MarioMaker(ObjectMaker):
-    def __init__(self, x, y, speed_x, speed_y, width, height, filename = 'resources/mario.png'):
+    def __init__(self, x, y, speed_x, speed_y, width = 40, height = 60, filename = 'resources/mario.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
@@ -30,7 +30,7 @@ class MarioMaker(ObjectMaker):
 
     
 class GhostMaker(ObjectMaker):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, width, height, mario = None, filename = 'resources/mario_ghost.png'):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, width= 40, height =40, mario = None, filename = 'resources/mario_ghost.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)

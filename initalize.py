@@ -22,6 +22,7 @@ class FromStringInitalizer(Initalizer):
         commands = self.string.split('\n')
         for command in commands:
             command = command.split(' ')
+            if command[0] == '//': continue
             obj_class = command[0]
             obj_args = command[1:]
             if 'chase' in obj_args:
@@ -31,7 +32,7 @@ class FromStringInitalizer(Initalizer):
                 world.mario = obj
             if isinstance(obj, Actor):
                 world.add_actor(obj)
-            elif isinstance(obj, GameObject):
-                world.add_object(obj)
             elif isinstance(obj, Ground):
                 world.add_ground(obj)
+            elif isinstance(obj, GameObject):
+                world.add_object(obj)

@@ -28,22 +28,22 @@ class CollisionEvent(Event):
         self.actor.speed_y = 0
 
     def hit_from_top(self):
-        self.actor.y = self.object.bottom + self.actor.height
+        self.actor.y = self.object.bottom
         self.actor.speed_y = 0
 
     def hit_from_left(self):
-        self.actor.x = self.object.left - self.actor.width
+        self.actor.x = self.object.right
         self.actor.speed_x = 0
 
     def hit_from_right(self):
-        self.actor.x = self.object.right + self.actor.width
+        self.actor.x = self.object.left - self.actor.width
         self.actor.speed_x = 0
 
     def handle(self):
         self.bottom = (self.actor.rectangle.bottom > self.object.top) and (self.actor.prev_rectangle.bottom <= self.object.top)
         self.top = (self.actor.rectangle.top < self.object.bottom) and (self.actor.prev_rectangle.top >= self.object.bottom)
-        self.left = (self.actor.rectangle.right > self.object.left) and (self.actor.prev_rectangle.right <= self.object.left)
-        self.right = (self.actor.rectangle.left < self.object.right) and (self.actor.prev_rectangle.left >= self.object.right)
+        self.right = (self.actor.rectangle.right > self.object.left) and (self.actor.prev_rectangle.right <= self.object.left)
+        self.left = (self.actor.rectangle.left < self.object.right) and (self.actor.prev_rectangle.left >= self.object.right)
         if self.top: self.hit_from_top()
         if self.bottom: self.hit_from_bottom()
         if self.left: self.hit_from_left()

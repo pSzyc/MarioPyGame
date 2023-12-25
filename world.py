@@ -15,6 +15,8 @@ class World:
         self.actors = []
         self._gravity = 1.5
         self.event_dispatcher = EventDispatcher()
+        self._camera_left_barier = 400
+        self._camera_right_barier = 4240
 
     def initalize(self):
         pygame.init()
@@ -71,6 +73,9 @@ class World:
     def camera_adjust(self):
         x_offset = self.mario.x - self.mario.x_prev
         y_offset = self.mario.y - self.mario.y_prev
+        if self.mario.x < self._camera_left_barier or self.mario.x > self._camera_right_barier:
+            x_offset = 0
+
         for actor in self.actors:
             actor.x -= x_offset
             actor.y -= y_offset
@@ -80,6 +85,8 @@ class World:
         for ground in self.ground_objects:
             ground.x -= x_offset
             ground.y -= y_offset
+        self._camera_left_barier -= x_offset
+        self._camera_right_barier -= x_offset
 
 
     def draw(self):

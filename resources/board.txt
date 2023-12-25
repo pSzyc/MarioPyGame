@@ -1,11 +1,27 @@
-Mario 400 300 5 0 40 60
-Ground 0 500 400 100
-Ground 400 600 400 100
+// Initalize board according to the descripction
+// Ground top left width height
+// Chest top left
+// Coin top left
+// Cherry top left
+Mario 400 300 0 0
+Ghost 450 200 5 0 back_and_forth
+Ground -40 0 40 800
+Ground 0 500 500 100
+Ground 500 600 300 100
 Ground 900 400 200 100
-Chest 400 550
+Ground 1200 500 300 100
+Ground 1600 600 400 100
+Ground 2000 800 400 100
+Ground 2400 500 400 100
+Ground 2800 300 400 100
+Ground 3320 400 160 80
+Ground 3600 480 160 80
+Ground 3880 560 160 80
+Ground 4160 640 160 80
+Ground 4440 720 160 80
+Ground 4600 200 40 800
 Coin 500 550
 Coin 550 550
 Coin 600 550
 Coin 650 550
-Coin 700 550
-Chest 750 550
+Chest 720 550
