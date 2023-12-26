@@ -21,7 +21,7 @@ class World:
     def initalize(self):
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
-        with open('resources/board_2.txt', 'r') as f:
+        with open('resources/board.txt', 'r') as f:
             board = f.read()
         initalizer = RefrenceFromStringInitalizer(board)
         initalizer.initalize(world=self)
