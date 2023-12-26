@@ -66,11 +66,15 @@ class ChaseMoveStrategy(MoveStrategy):
     def propose_move(self, actor):
         x_mario = self.mario.x
         x_actor = actor.x
-        if x_mario < x_actor:
-            actor.on_turn(isRight = False)
-        else:  
-            actor.on_turn(isRight = True)
-        x_new = actor.x + actor.speed_x
+        if abs(x_mario - x_actor) < 300:
+            if x_mario < x_actor:
+                actor.on_turn(isRight = False)
+            else:  
+                actor.on_turn(isRight = True)
+            x_new = actor.x + actor.speed_x
+        else:
+            x_new = actor.x
+        
         y_new = actor.y + actor.speed_y
         return x_new, y_new
 

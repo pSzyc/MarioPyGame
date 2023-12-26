@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from math import sqrt
 from actors import Mario, Ghost, Actor
-from objects import Coin, Cherry, Chest
-from ground import Ground
+from objects import Coin, Cherry, Chest, Door
+from ground import Ground, Boundary
 from objects import GameObject
 
 class Event(ABC):
@@ -56,10 +56,13 @@ class EventDispatcher:
             Coin.__name__: MarioHitsCoinEvent,
             Cherry.__name__: MarioHitsCherryEvent,
             Chest.__name__: MarioHitsChestEvent,
-            Ghost.__name__: MarioHitsGhostEvent
+            Ghost.__name__: MarioHitsGhostEvent,
+            Boundary.__name__: ActorHitsBoundary,
+            Door.__name__: MarioHitsDoorEvent
         }
         ghost_event_dict = {
             Ground.__name__: CollisionEvent,
+            Boundary.__name__: ActorHitsBoundary,
         }
         self.nested_event_dict = {
             Mario.__name__: mario_event_dict,
@@ -88,9 +91,14 @@ class EventManager:
         for event in self.events:
             obj = event.handle()
             if isinstance(obj, Actor):
+                if isinstance(obj, Mario):
+                    return 'Lose'
                 self.actors.remove(obj)
             elif isinstance(obj, GameObject):
+                if isinstance(obj, Door):
+                    return 'Win'
                 self.objects.remove(obj)
+        return 'Continue'
 
 
 class MarioHitsGroundEvent(CollisionEvent):    
@@ -103,6 +111,11 @@ class MarioHitsGroundEvent(CollisionEvent):
             self.actor.speed_x += 0.5
         else:
             self.actor.speed_x = 0
+
+class ActorHitsBoundary(Event):
+    def handle(self):
+        print('boundary')
+        return self.obj1
 
 class MarioHitsGhostEvent(CollisionEvent):
     def handle(self):
@@ -137,4 +150,8 @@ class MarioHitsCherryEvent(Event):
 class MarioHitsChestEvent(Event):
     def handle(self):
         self.obj1.coins += 10
+        return self.obj2
+    
+class MarioHitsDoorEvent(Event):
+    def handle(self):
         return self.obj2

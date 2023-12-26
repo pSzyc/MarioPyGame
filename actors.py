@@ -55,15 +55,13 @@ class Actor(GameObject):
 class Ghost(Actor):
     def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=40):
         super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
-        self.speed = 2.5
         self.right = True
     
     def on_turn(self, isRight):
         if self.right != isRight:
             self.right = not self.right
             self.image = pygame.transform.flip(self.image, True, False)
-        self.speed_x = 2 * (isRight - 0.5) * self.speed
-
+            self.speed_x = - self.speed_x
 
     def move(self):
         x_new, y_new = self.move_strategy.propose_move(self)

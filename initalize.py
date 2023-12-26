@@ -36,3 +36,37 @@ class FromStringInitalizer(Initalizer):
                 world.add_ground(obj)
             elif isinstance(obj, GameObject):
                 world.add_object(obj)
+        
+
+class RefrenceFromStringInitalizer(Initalizer):
+    def __init__(self, string):
+        self.string = string
+        self.x_ref = 0
+        self.y_ref = 0
+
+    def initalize(self, world):
+        factory = ObjectFactory()
+        commands = self.string.split('\n')
+        for command in commands:
+            command = command.split(' ')
+            if command[0] == '//': continue
+            obj_class = command[0]
+            obj_args = command[1:]
+            if obj_class == 'Ground':
+                self.x_ref = int(obj_args[0])
+                self.y_ref = int(obj_args[1])
+            else:
+                obj_args[0] = str(int(obj_args[0]) + self.x_ref)
+                obj_args[1] = str(int(obj_args[1]) + self.y_ref)
+            if 'chase' in obj_args:
+                obj_args.append(world.mario)
+            obj = factory.create(obj_class, obj_args)
+            if obj_class == Mario.__name__:
+                world.mario = obj
+            if isinstance(obj, Actor):
+                world.add_actor(obj)
+            elif isinstance(obj, Ground):
+                world.add_ground(obj)
+            elif isinstance(obj, GameObject):
+                world.add_object(obj)
+            

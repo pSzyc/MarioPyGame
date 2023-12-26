@@ -30,7 +30,7 @@ class MarioMaker(ObjectMaker):
 
     
 class GhostMaker(ObjectMaker):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, width= 40, height =40, mario = None, filename = 'resources/mario_ghost.png'):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, mario = None, width= 40, height =40, filename = 'resources/mario_ghost.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
@@ -97,6 +97,29 @@ class GroundMaker(ObjectMaker):
     def create(self):
         return Ground(self.x, self.y, self.width, self.height)
 
+class DoorMaker(ObjectMaker):
+    def __init__(self, x, y, width = 80, height = 120, filename = 'resources/door.png'):
+        super().__init__()
+        self.x = int(x)
+        self.y = int(y)
+        self.width = int(width)
+        self.height = int(height)
+        self.filename = filename
+
+    def create(self):
+        image = FromFileLoader(self.filename).load_image(self.width, self.height)
+        return Door(self.x, self.y, self.width, self.height, image)
+
+class BoundaryMaker(ObjectMaker):
+    def __init__(self, x, y, width, height):
+        super().__init__()
+        self.x = int(x)
+        self.y = int(y)
+        self.width = int(width)
+        self.height = int(height)
+
+    def create(self):
+        return Boundary(self.x, self.y, self.width, self.height)
 
 class ObjectFactory():
     def create(self, type, args):
@@ -112,5 +135,9 @@ class ObjectFactory():
             return ChestMaker(*args).create()
         elif type == Ground.__name__:
             return GroundMaker(*args).create()
+        elif type == Door.__name__:
+            return DoorMaker(*args).create()
+        elif type == Boundary.__name__:
+            return BoundaryMaker(*args).create()
         else:
             raise Exception("Actor type not found.")

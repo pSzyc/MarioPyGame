@@ -4,7 +4,7 @@ from itertools import combinations
 from actors_factory import *
 from events import EventDispatcher, EventManager
 from time import sleep
-from initalize import FromStringInitalizer
+from initalize import RefrenceFromStringInitalizer
 
 class World:
     def __init__(self):
@@ -21,9 +21,9 @@ class World:
     def initalize(self):
         pygame.init()
         self.screen = pygame.display.set_mode((800, 600))
-        with open('resources/board.txt', 'r') as f:
+        with open('resources/board_2.txt', 'r') as f:
             board = f.read()
-        initalizer = FromStringInitalizer(board)
+        initalizer = RefrenceFromStringInitalizer(board)
         initalizer.initalize(world=self)
 
     def add_ground(self, ground):
@@ -64,7 +64,9 @@ class World:
                 if actor.rectangle.colliderect(ground.rectangle):
                     event_manager.add_event(self.event_dispatcher.dispatch(actor, ground))
         
-        event_manager.handle_events()
+        outcome = event_manager.handle_events()
+        return outcome
+        
 
     def gravity(self):
         for actor in self.actors:

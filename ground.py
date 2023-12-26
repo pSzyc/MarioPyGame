@@ -21,3 +21,10 @@ class Ground(GameObject):
                 screen.blit(self.image, (x, y))
                 # Draw grass
         pygame.draw.rect(screen, GREEN, self.grass())
+
+class Boundary(GameObject):
+    def __init__(self, x, y, width, height):
+        super().__init__(x, y, width, height, None)
+
+    def draw(self, screen):
+        pass

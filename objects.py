@@ -77,3 +77,10 @@ class Chest(GameObject):
 
     def draw(self, screen):
         screen.blit(self.image, self.rectangle)
+
+class Door(GameObject):
+    def __init__(self, x, y, width, height, image):
+        super().__init__(x, y, width, height, image)
+
+    def draw(self, screen):
+        screen.blit(self.image, self.rectangle)

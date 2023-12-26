@@ -17,6 +17,14 @@ if __name__ == '__main__':
         check_for_quit()
         world.gravity()
         world.move_actors()
-        world.handle_collision()
+        outcome = world.handle_collision()
         world.draw()
         clock.tick(30)
+        if outcome == 'Lose':
+            print('You lose')
+            pygame.quit()
+            sys.exit()
+        elif outcome == 'Win':
+            print('You win')
+            pygame.quit()
+            sys.exit()
