@@ -39,13 +39,13 @@ class World:
         for actor in self.actors:
             actor.move()
     
-    def draw_scene(self):
+    def draw_scene(self, x_offset, y_offset):
         for actor in self.actors:
-            actor.draw(self.screen)
+            actor.draw(self.screen, x_offset, y_offset)
         for obj in self.objects:
-            obj.draw(self.screen)
+            obj.draw(self.screen, x_offset, y_offset)
         for ground in self.ground_objects:
-            ground.draw(self.screen)
+            ground.draw(self.screen, x_offset, y_offset)
 
     def handle_collision(self):
         event_manager = EventManager(self.objects, self.actors)
@@ -54,7 +54,7 @@ class World:
                 continue
             if self.mario.rectangle.colliderect(actor.rectangle):
                 event_manager.add_event(self.event_dispatcher.dispatch(self.mario, actor))
-        
+                
         for obj in self.objects:
             if self.mario.rectangle.colliderect(obj.rectangle):
                 event_manager.add_event(self.event_dispatcher.dispatch(self.mario, obj))
@@ -91,8 +91,13 @@ class World:
         self._camera_right_barier -= x_offset
 
 
+    def camera_adjust_mario(self):
+        x_offset = int(self.mario.x - self.screen.get_width() / 2)
+        y_offset = int(self.mario.y - self.screen.get_height() / 2)
+        return x_offset, y_offset
+
     def draw(self):
         self.screen.fill((150, 150, 200))  # Light blue background color
-        self.camera_adjust()
-        self.draw_scene()
+        x_offset, y_offset = self.camera_adjust_mario()
+        self.draw_scene(x_offset, y_offset)
         pygame.display.update()

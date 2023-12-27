@@ -3,7 +3,6 @@ from actors import *
 from move import *
 from graphics import *
 from objects import *
-from ground import *
 
 class ObjectMaker(ABC):
     def __init__(self):
@@ -30,7 +29,7 @@ class MarioMaker(ObjectMaker):
 
     
 class GhostMaker(ObjectMaker):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, mario = None, width= 40, height =40, filename = 'resources/mario_ghost.png'):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, mario = None, width= 50, height = 60, filename = 'resources/mario_ghost.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)

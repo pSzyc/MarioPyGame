@@ -2,7 +2,7 @@ Mario 380 270 0 0
 Boundary 0 800 4000 40
 Ground -40 0 40 800
 Ground 0 500 500 80
-Ghost 100 -40 5 0 chase
+// Ghost 100 -80 5 0 chase
 Coin 0 -40
 Coin 80 -40
 Coin 160 -40
@@ -14,7 +14,7 @@ Coin 160 -40
 Coin 240 -40
 Coin 320 -40
 Coin 400 -40
-Ghost 100 -60 5 0 back_and_forth
+Ghost 100 -80 5 0 back_and_forth
 Ground 1000 400 500 80
 Coin 0 -40
 Coin 80 -40
@@ -22,7 +22,7 @@ Coin 160 -40
 Coin 240 -40
 Coin 320 -40
 Coin 400 -40
-Ghost 200 -60 3 0 chase
+Ghost 200 -80 3 0 chase
 Ground 1500 700 320 80
 Cherry 100 -50
 Ground 1820 400 400 80
@@ -33,7 +33,7 @@ Coin 240 -40
 Coin 320 -40
 Ground 2300 520 80 160
 Ground 2380 600 800 80
-Ghost 400 -60 5 0 chase
+// Ghost 400 -60 5 0 chase
 Coin 20 -40
 Coin 100 -40
 Coin 180 -40
@@ -44,7 +44,7 @@ Coin 500 -40
 Coin 580 -40
 Coin 660 -40
 Coin 740 -40
-Ghost 700 -60 5 0 chase
+// Ghost 700 -60 5 0 chase
 Ground 3180 520 80 160
 Ground 3300 480 240 40
 Door 160 -120 80 120

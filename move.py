@@ -52,7 +52,7 @@ class BackAndForthMoveStrategy(MoveStrategy):
         self.timer -= 1
         if self.timer == 0:
                 self.timer = self.time_swap
-                actor.on_turn(isRight = not actor.right)
+                actor.on_turn(isRight = not actor.facing_right)
         x_new = actor.x + actor.speed_x
         y_new = actor.y + actor.speed_y
 

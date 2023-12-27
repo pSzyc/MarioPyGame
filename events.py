@@ -1,9 +1,7 @@
 from abc import ABC, abstractmethod
 from math import sqrt
 from actors import Mario, Ghost, Actor
-from objects import Coin, Cherry, Chest, Door
-from ground import Ground, Boundary
-from objects import GameObject
+from objects import *
 
 class Event(ABC):
     def __init__(self, obj1, obj2):
@@ -98,6 +96,7 @@ class EventManager:
                 if isinstance(obj, Door):
                     return 'Win'
                 self.objects.remove(obj)
+        self.events = []
         return 'Continue'
 
 
@@ -114,7 +113,6 @@ class MarioHitsGroundEvent(CollisionEvent):
 
 class ActorHitsBoundary(Event):
     def handle(self):
-        print('boundary')
         return self.obj1
 
 class MarioHitsGhostEvent(CollisionEvent):

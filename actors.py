@@ -1,5 +1,4 @@
-import numpy as np
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 import pygame
 from move import MoveStrategy
 from objects import GameObject
@@ -12,6 +11,15 @@ class Actor(GameObject):
         self.x_prev = x
         self.y_prev = y
         self._move_strategy = move_strategy
+        self._facing_right = True
+
+    @property
+    def facing_right(self):
+        return self._facing_right
+    
+    @facing_right.setter
+    def facing_right(self, value):
+        self._facing_right = value
 
     @property
     def prev_rectangle(self):
@@ -41,7 +49,7 @@ class Actor(GameObject):
     def speed_y(self, value):
         self._speed_y = value
     
-    def gravity(self, gravity = 1):
+    def gravity(self, gravity):
         self.speed_y += gravity
     
     @abstractmethod
@@ -55,11 +63,10 @@ class Actor(GameObject):
 class Ghost(Actor):
     def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=40):
         super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
-        self.right = True
     
     def on_turn(self, isRight):
-        if self.right != isRight:
-            self.right = not self.right
+        if self.facing_right != isRight:
+            self.facing_right = not self.facing_right
             self.image = pygame.transform.flip(self.image, True, False)
             self.speed_x = - self.speed_x
 
@@ -70,29 +77,36 @@ class Ghost(Actor):
         self.x = x_new
         self.y = y_new
 
-    def draw(self, screen):
-        screen.blit(self.image, self.rectangle)
+    def draw(self, screen, x_offset, y_offset):
+        # Draw Mario image
+        draw_rect = pygame.Rect(self.x - x_offset, self.y - y_offset, self.width, self.height)
+        screen.blit(self.image, draw_rect)
 
 class Mario(Actor):
     def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=60):
         super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
         self.speed = 7.5
-        self.right = True
         self.jump_energy = 0
         self.lifes = 3
         self.coins = 0
         self.stunned_time = 0
 
     def on_turn(self, isRight):
-        if self.right != isRight:
-            self.right = not self.right
+        if self.facing_right != isRight:
+            self.facing_right = not self.facing_right
             self.image = pygame.transform.flip(self.image, True, False)
         self.speed_x += 2 * (isRight - 0.5) * self.speed
-        self.speed_x = np.clip(self.speed_x, -self.speed, self.speed)   
+        
+        # clip speed
+        if self.speed_x > self.speed:
+            self.speed_x = self.speed
+        elif self.speed_x < -self.speed:
+            self.speed_x = -self.speed
 
-    def draw(self, screen):
+    def draw(self, screen, x_offset, y_offset):
         # Draw Mario image
-        screen.blit(self.image, self.rectangle)
+        draw_rect = pygame.Rect(self.x - x_offset, self.y - y_offset, self.width, self.height)
+        screen.blit(self.image, draw_rect)
         
         # Draw lifes as hearts in left upper corner
         heart_image = pygame.image.load("resources/heart.png")

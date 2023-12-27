@@ -2,7 +2,6 @@ from actors_factory import ObjectFactory
 from abc import ABC, abstractmethod
 from actors import *
 from objects import *
-from ground import *
 
 class Initalizer(ABC):
     def __init__(self):
