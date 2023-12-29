@@ -54,10 +54,13 @@ class RefrenceFromStringInitalizer(Initalizer):
             obj_class = command[0]
             obj_args = command[1:]
             
+           
             if obj_class == 'Ground':
+                # setting frame of refrence
                 self.x_ref = int(obj_args[0])
                 self.y_ref = int(obj_args[1])
             else:
+                # new coordinates for non ground objects
                 obj_args[0] = str(int(obj_args[0]) + self.x_ref)
                 obj_args[1] = str(int(obj_args[1]) + self.y_ref)
             

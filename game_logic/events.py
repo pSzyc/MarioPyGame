@@ -89,18 +89,24 @@ class EventManager:
 
     def add_event(self, event):
         self.events.append(event)
-
+    
+    def remove_from_world(self, obj):
+        if isinstance(obj, Actor):
+            self.actors.remove(obj)
+        elif isinstance(obj, GameObject):
+            self.objects.remove(obj)
+        else:
+            raise ValueError('Event returned invalid object')
+    
     def handle_events(self):
         for event in self.events:
             obj = event.handle()
-            if isinstance(obj, Actor):
+            if isinstance(event, MarioHitsDoorEvent):
+                return 'Win'
+            elif obj:
+                self.remove_from_world(obj)
                 if isinstance(obj, Mario):
                     return 'Lose'
-                self.actors.remove(obj)
-            elif isinstance(obj, GameObject):
-                if isinstance(obj, Door):
-                    return 'Win'
-                self.objects.remove(obj)
         self.events = []
         return 'Continue'
 
@@ -157,4 +163,4 @@ class MarioHitsChestEvent(Event):
     
 class MarioHitsDoorEvent(Event):
     def handle(self):
-        return self.obj2
+        return 
