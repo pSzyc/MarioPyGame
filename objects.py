@@ -91,13 +91,13 @@ class Door(GameObject):
         screen.blit(self.image, draw_rect)
 
 class Ground(GameObject):
-    def __init__(self, x, y, width, height, texture_width = 40, texture_height = 40, texture = 'resources/ground.png'):
+    def __init__(self, x, y, width, height, texture_image):
+        texture_width = texture_image.get_width()
+        texture_height = texture_image.get_height()
         width = width - width % texture_width
         height = height - height % texture_height
         self.texture_width = texture_width
         self.texture_height = texture_height  
-        texture_image = pygame.image.load(texture)
-        texture_image = pygame.transform.scale(texture_image, (self.texture_width, self.texture_height))
         super().__init__(x, y, width, height, texture_image)
 
     def grass(self, x_offset, y_offset):

@@ -86,15 +86,19 @@ class ChestMaker(ObjectMaker):
         return Chest(self.x, self.y, self.width, self.height, image)
 
 class GroundMaker(ObjectMaker):
-    def __init__(self, x, y, width, height):
+    def __init__(self, x, y, width, height, texture_width = 40, texture_height = 40, filename = 'resources/ground.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
         self.width = int(width)
         self.height = int(height)
+        self.texture_width = int(texture_width)
+        self.texture_height = int(texture_height)
+        self.filename = filename
 
     def create(self):
-        return Ground(self.x, self.y, self.width, self.height)
+        image = FromFileLoader(self.filename).load_image(self.texture_width, self.texture_height)
+        return Ground(self.x, self.y, self.width, self.height, image)
 
 class DoorMaker(ObjectMaker):
     def __init__(self, x, y, width = 80, height = 120, filename = 'resources/door.png'):
@@ -121,22 +125,23 @@ class BoundaryMaker(ObjectMaker):
         return Boundary(self.x, self.y, self.width, self.height)
 
 class ObjectFactory():
-    def create(self, type, args):
-        if type == Mario.__name__:
-            return MarioMaker(*args).create()
-        elif type == Ghost.__name__:
-            return GhostMaker(*args).create()
-        elif type == Coin.__name__:
-            return CoinMaker(*args).create()
-        elif type == Cherry.__name__:
-            return CherryMaker(*args).create()
-        elif type == Chest.__name__:
-            return ChestMaker(*args).create()
-        elif type == Ground.__name__:
-            return GroundMaker(*args).create()
-        elif type == Door.__name__:
-            return DoorMaker(*args).create()
-        elif type == Boundary.__name__:
-            return BoundaryMaker(*args).create()
-        else:
-            raise Exception("Actor type not found.")
+        def __init__(self):
+            self.makers = {
+                Mario.__name__: MarioMaker,
+                Ghost.__name__: GhostMaker,
+                Coin.__name__: CoinMaker,
+                Cherry.__name__: CherryMaker,
+                Chest.__name__: ChestMaker,
+                Ground.__name__: GroundMaker,
+                Door.__name__: DoorMaker,
+                Boundary.__name__: BoundaryMaker
+            }
+
+        def register(self, type, maker):
+            self.makers[type] = maker
+
+        def create(self, type, args):
+            if type in self.makers:
+                return self.makers[type](*args).create()
+            else:
+                raise Exception("Actor type not found.")

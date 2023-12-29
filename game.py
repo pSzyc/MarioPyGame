@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import pygame
 import sys
 from world import World

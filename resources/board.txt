@@ -47,5 +47,6 @@ Coin 740 -40
 // Ghost 700 -60 5 0 chase
 Ground 3180 520 80 160
 Ground 3300 480 240 40
+Chest 100 -50
 Door 160 -120 80 120
 Ground 3540 80 40 440
