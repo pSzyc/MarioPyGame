@@ -1,8 +1,10 @@
 from abc import ABC, abstractmethod
-from actors import *
-from move import *
-from graphics import *
-from objects import *
+import sys
+sys.path.append('..')
+from game_components.actors import *
+from game_logic.move import *
+from utilities.graphics import *
+from game_components.game_objects import *
 
 class ObjectMaker(ABC):
     def __init__(self):

@@ -1,5 +1,6 @@
 import pygame
 from abc import ABC, abstractmethod
+
 GREEN = (34, 139, 34)
 
 class GameObject(ABC):

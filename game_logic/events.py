@@ -1,7 +1,9 @@
 from abc import ABC, abstractmethod
 from math import sqrt
-from actors import Mario, Ghost, Actor
-from objects import *
+import sys
+sys.path.append('..')
+from game_components.actors import *
+from game_components.game_objects import *
 
 class Event(ABC):
     def __init__(self, obj1, obj2):

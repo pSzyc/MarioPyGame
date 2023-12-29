@@ -1,10 +1,8 @@
 import pygame
-from move import *
-from itertools import combinations
-from actors_factory import *
-from events import EventDispatcher, EventManager
-from time import sleep
-from initalize import RefrenceFromStringInitalizer
+from game_logic.move import *
+from game_components.game_object_factory import *
+from game_logic.events import EventDispatcher, EventManager
+from utilities.initalize import RefrenceFromStringInitalizer
 
 class World:
     def __init__(self):

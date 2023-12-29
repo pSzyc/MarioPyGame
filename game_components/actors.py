@@ -1,7 +1,9 @@
 from abc import abstractmethod
 import pygame
-from move import MoveStrategy
-from objects import GameObject
+import sys
+sys.path.append('..')
+from game_logic.move import MoveStrategy
+from game_components.game_objects import GameObject
 
 class Actor(GameObject):
     def __init__(self, x, y, speed_x, speed_y, move_strategy, width, height, image):

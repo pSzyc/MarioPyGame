@@ -1,7 +1,9 @@
-from actors_factory import ObjectFactory
 from abc import ABC, abstractmethod
-from actors import *
-from objects import *
+import sys
+sys.path.append('..')
+from game_components.game_object_factory import ObjectFactory
+from game_components.actors import *
+from game_components.game_objects import *
 
 class Initalizer(ABC):
     def __init__(self):
