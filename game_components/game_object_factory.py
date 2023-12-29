@@ -31,7 +31,7 @@ class MarioMaker(ObjectMaker):
 
     
 class GhostMaker(ObjectMaker):
-    def __init__(self, x, y, speed_x, speed_y, move_strategy, mario = None, width= 50, height = 60, filename = 'resources/mario_ghost.png'):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, mario = None, width= 50, height = 60, filename = 'resources/ghost.png'):
         super().__init__()
         self.x = int(x)
         self.y = int(y)
@@ -45,6 +45,7 @@ class GhostMaker(ObjectMaker):
 
     def create(self):
         image = FromFileLoader(self.filename).load_image(self.width, self.height)
+        image = pygame.transform.flip(image, True, False)
         move_strategy_instance = get_move_strategy(self.move_strategy, self.mario)
         return Ghost(self.x, self.y, self.speed_x, self.speed_y, move_strategy_instance, image, self.width, self.height)
 

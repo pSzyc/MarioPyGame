@@ -53,21 +53,22 @@ class RefrenceFromStringInitalizer(Initalizer):
             if command[0] == '//': continue
             obj_class = command[0]
             obj_args = command[1:]
+            
             if obj_class == 'Ground':
                 self.x_ref = int(obj_args[0])
                 self.y_ref = int(obj_args[1])
             else:
                 obj_args[0] = str(int(obj_args[0]) + self.x_ref)
                 obj_args[1] = str(int(obj_args[1]) + self.y_ref)
+            
             if 'chase' in obj_args:
-                obj_args.append(world.mario)
+                if world.mario:
+                    obj_args.append(world.mario)
+                else:
+                    raise ValueError('Mario must be initalized before any actors that chase him')
+            
             obj = factory.create(obj_class, obj_args)
             if obj_class == Mario.__name__:
                 world.mario = obj
-            if isinstance(obj, Actor):
-                world.add_actor(obj)
-            elif isinstance(obj, Ground):
-                world.add_ground(obj)
-            elif isinstance(obj, GameObject):
-                world.add_object(obj)
             
+            world.add_new(obj)

@@ -74,8 +74,11 @@ class EventDispatcher:
         event = actor_event_dict[object.__class__.__name__](actor, object)
         return event
 
-    def register_event(self, event_name, actor_event_dict):
-        self.event_dict[event_name] = actor_event_dict
+    def register_actor(self, actor_class, actor_event_dict):
+        self.nested_event_dict[actor_class] = actor_event_dict
+
+    def register_event(self, actor_class, object_class, event_class):
+        self.nested_event_dict[actor_class][object_class] = event_class
     
 
 class EventManager:

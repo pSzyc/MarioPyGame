@@ -1,4 +1,6 @@
 import pygame
+import sys
+sys.path.append('..')
 from game_logic.move import *
 from game_components.game_object_factory import *
 from game_logic.events import EventDispatcher, EventManager
@@ -16,10 +18,10 @@ class World:
         self._camera_left_barier = 400
         self._camera_right_barier = 4240
 
-    def initalize(self):
+    def initalize(self, screen_width = 800, screen_height = 600, filename = 'resources/board.txt'):
         pygame.init()
-        self.screen = pygame.display.set_mode((800, 600))
-        with open('resources/board.txt', 'r') as f:
+        self.screen = pygame.display.set_mode((screen_width, screen_height))
+        with open(filename, 'r') as f:
             board = f.read()
         initalizer = RefrenceFromStringInitalizer(board)
         initalizer.initalize(world=self)
@@ -32,6 +34,16 @@ class World:
 
     def add_object(self, obj):
         self.objects.append(obj)
+
+    def add_new(self, obj):
+        if isinstance(obj, Actor):
+            self.add_actor(obj)
+        elif isinstance(obj, Ground):
+            self.add_ground(obj)
+        elif isinstance(obj, GameObject):
+            self.add_object(obj)
+        else:
+            raise TypeError('Object is not a valid type')
 
     def move_actors(self):
         for actor in self.actors:
@@ -71,31 +83,12 @@ class World:
             actor.gravity(self._gravity)
 
     def camera_adjust(self):
-        x_offset = self.mario.x - self.mario.x_prev
-        y_offset = self.mario.y - self.mario.y_prev
-        if self.mario.x < self._camera_left_barier or self.mario.x > self._camera_right_barier:
-            x_offset = 0
-
-        for actor in self.actors:
-            actor.x -= x_offset
-            actor.y -= y_offset
-        for obj in self.objects:
-            obj.x -= x_offset
-            obj.y -= y_offset
-        for ground in self.ground_objects:
-            ground.x -= x_offset
-            ground.y -= y_offset
-        self._camera_left_barier -= x_offset
-        self._camera_right_barier -= x_offset
-
-
-    def camera_adjust_mario(self):
         x_offset = int(self.mario.x - self.screen.get_width() / 2)
         y_offset = int(self.mario.y - self.screen.get_height() / 2)
         return x_offset, y_offset
 
     def draw(self):
         self.screen.fill((150, 150, 200))  # Light blue background color
-        x_offset, y_offset = self.camera_adjust_mario()
+        x_offset, y_offset = self.camera_adjust()
         self.draw_scene(x_offset, y_offset)
         pygame.display.update()

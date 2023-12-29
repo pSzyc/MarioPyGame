@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import pygame
 import sys
-from world import World
+from game_components.world import World
 
 def check_for_quit():
     for event in pygame.event.get():
