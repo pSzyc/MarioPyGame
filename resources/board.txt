@@ -15,7 +15,7 @@ Coin 160 -40
 Coin 240 -40
 Coin 320 -40
 Coin 400 -40
-Ghost 100 -80 5 0 back_and_forth
+Bomb 100 -80 5 0 back_and_forth
 Ground 1000 400 500 80
 Coin 0 -40
 Coin 80 -40

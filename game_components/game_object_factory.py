@@ -140,6 +140,23 @@ class WineMaker(ObjectMaker):
         image = FromFileLoader(self.filename).load_image(self.width, self.height)
         return Wine(self.x, self.y, self.width, self.height, image)
 
+class BombMaker(ObjectMaker):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy, width = 40, height = 40, filename = 'resources/bomb.png'):
+        super().__init__()
+        self.x = int(x)
+        self.y = int(y)
+        self.width = int(width)
+        self.height = int(height)
+        self.filename = filename
+        self.speed_x = int(speed_x)
+        self.speed_y = int(speed_y)
+        self.move_strategy = move_strategy
+
+    def create(self):
+        image = FromFileLoader(self.filename).load_image(self.width, self.height)
+        move_strategy = get_move_strategy(self.move_strategy)
+        return Bomb(self.x, self.y, self.speed_x, self.speed_y, move_strategy, image, self.width, self.height)
+
 class ObjectFactory():
         def __init__(self):
             self.makers = {
@@ -151,7 +168,8 @@ class ObjectFactory():
                 Ground.__name__: GroundMaker,
                 Door.__name__: DoorMaker,
                 Boundary.__name__: BoundaryMaker,
-                Wine.__name__: WineMaker
+                Wine.__name__: WineMaker,
+                Bomb.__name__: BombMaker
             }
 
         def register(self, type, maker):

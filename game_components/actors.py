@@ -159,3 +159,24 @@ class Mario(Actor):
         self.speed_y = -20
         self.image = pygame.transform.rotate(self.image, -90)
         self.width, self.height = self.height, self.width
+
+class Bomb(Actor):
+    def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=40):
+        super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
+
+    def on_turn(self, isRight):
+        if self.facing_right != isRight:
+            self.facing_right = not self.facing_right
+            self.image = pygame.transform.flip(self.image, True, False)
+            self.speed_x = - self.speed_x
+
+    def move(self):
+        x_new, y_new = self.move_strategy.propose_move(self)
+        self.x_prev = self.x
+        self.y_prev = self.y
+        self.x = x_new
+        self.y = y_new
+
+    def draw(self, screen, x_offset, y_offset):
+        draw_rect = pygame.Rect(self.x - x_offset, self.y - y_offset, self.width, self.height)
+        screen.blit(self.image, draw_rect)

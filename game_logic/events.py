@@ -60,14 +60,20 @@ class EventDispatcher:
             Boundary.__name__: ActorHitsBoundary,
             Door.__name__: MarioHitsDoorEvent,
             Wine.__name__: MarioHitsWineEvent,
+            Bomb.__name__: MarioHitsBombEvent
         }
         ghost_event_dict = {
             Ground.__name__: CollisionEvent,
             Boundary.__name__: ActorHitsBoundary,
         }
+        bomb_event_dict = {
+            Ground.__name__: CollisionEvent,
+            Boundary.__name__: ActorHitsBoundary,
+        }
         self.nested_event_dict = {
             Mario.__name__: mario_event_dict,
-            Ghost.__name__: ghost_event_dict
+            Ghost.__name__: ghost_event_dict,
+            Bomb.__name__: bomb_event_dict
         }
 
     def dispatch(self, actor, object):
@@ -172,3 +178,18 @@ class MarioHitsWineEvent(Event):
         self.obj1.stunned_time += 100
         self.obj1.fall_asleep()
         return self.obj2
+    
+class MarioHitsBombEvent(Event):
+    def handle(self):
+        self.obj1.lifes -= 1
+        self.obj1.stunned_time += 100
+        self.obj1.fall_asleep()
+        self.push_mario()
+        return self.obj2
+    
+    def push_mario(self):
+        dx = self.obj1.x - self.obj2.x
+        dy = self.obj1.y - self.obj2.y
+        d = sqrt(dx**2 + dy**2)
+        self.obj1.speed_x = dx / d * 40
+        self.obj1.speed_y = dy / d * 40
