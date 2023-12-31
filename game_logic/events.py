@@ -58,7 +58,8 @@ class EventDispatcher:
             Chest.__name__: MarioHitsChestEvent,
             Ghost.__name__: MarioHitsGhostEvent,
             Boundary.__name__: ActorHitsBoundary,
-            Door.__name__: MarioHitsDoorEvent
+            Door.__name__: MarioHitsDoorEvent,
+            Wine.__name__: MarioHitsWineEvent,
         }
         ghost_event_dict = {
             Ground.__name__: CollisionEvent,
@@ -164,3 +165,10 @@ class MarioHitsChestEvent(Event):
 class MarioHitsDoorEvent(Event):
     def handle(self):
         return 
+    
+class MarioHitsWineEvent(Event):
+    def handle(self):
+        self.obj1.lifes += 1
+        self.obj1.stunned_time += 100
+        self.obj1.fall_asleep()
+        return self.obj2

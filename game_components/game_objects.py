@@ -119,3 +119,11 @@ class Boundary(GameObject):
         if self.image:
             draw_rect = pygame.Rect(self.x - x_offset, self.y - y_offset, self.width, self.height)
             screen.blit(self.image, draw_rect)
+
+class Wine(GameObject):
+    def __init__(self, x, y, width, height, image):
+        super().__init__(x, y, width, height, image)
+
+    def draw(self, screen, x_offset, y_offset):
+        draw_rect = pygame.Rect(self.x - x_offset, self.y - y_offset, self.width, self.height)
+        screen.blit(self.image, draw_rect)

@@ -92,6 +92,7 @@ class Mario(Actor):
         self.lifes = 3
         self.coins = 0
         self.stunned_time = 0
+        self.isSleeping = False
 
     def on_turn(self, isRight):
         if self.facing_right != isRight:
@@ -133,6 +134,8 @@ class Mario(Actor):
 
     def move(self):
         if self.stunned_time == 0:
+            if self.isSleeping:
+                self.wake_up()
             if self.jump_energy < 20:
                 self.jump_energy += 1
             x_new, y_new = self.move_strategy.propose_move(self)
@@ -145,3 +148,14 @@ class Mario(Actor):
         self.y_prev = self.y
         self.x = x_new
         self.y = y_new
+    
+    def fall_asleep(self):
+        self.isSleeping = True
+        self.image = pygame.transform.rotate(self.image, 90)
+        self.width, self.height = self.height, self.width
+    
+    def wake_up(self):
+        self.isSleeping = False
+        self.speed_y = -20
+        self.image = pygame.transform.rotate(self.image, -90)
+        self.width, self.height = self.height, self.width

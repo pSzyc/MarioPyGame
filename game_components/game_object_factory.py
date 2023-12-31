@@ -127,6 +127,19 @@ class BoundaryMaker(ObjectMaker):
     def create(self):
         return Boundary(self.x, self.y, self.width, self.height)
 
+class WineMaker(ObjectMaker):
+    def __init__(self, x, y, width = 40, height = 40, filename = 'resources/wine.png'):
+        super().__init__()
+        self.x = int(x)
+        self.y = int(y)
+        self.width = int(width)
+        self.height = int(height)
+        self.filename = filename
+
+    def create(self):
+        image = FromFileLoader(self.filename).load_image(self.width, self.height)
+        return Wine(self.x, self.y, self.width, self.height, image)
+
 class ObjectFactory():
         def __init__(self):
             self.makers = {
@@ -137,7 +150,8 @@ class ObjectFactory():
                 Chest.__name__: ChestMaker,
                 Ground.__name__: GroundMaker,
                 Door.__name__: DoorMaker,
-                Boundary.__name__: BoundaryMaker
+                Boundary.__name__: BoundaryMaker,
+                Wine.__name__: WineMaker
             }
 
         def register(self, type, maker):
