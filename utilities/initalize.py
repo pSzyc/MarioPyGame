@@ -14,11 +14,11 @@ class Initalizer(ABC):
         pass
 
 class FromStringInitalizer(Initalizer):
-    def __init__(self, string):
+    def __init__(self, string) -> None:
         super().__init__()
         self.string = string
 
-    def initalize(self, world):
+    def initalize(self, world) -> None:
         factory = ObjectFactory()
         commands = self.string.split('\n')
         for command in commands:
@@ -40,12 +40,12 @@ class FromStringInitalizer(Initalizer):
         
 
 class RefrenceFromStringInitalizer(Initalizer):
-    def __init__(self, string):
+    def __init__(self, string) -> None:
         self.string = string
         self.x_ref = 0
         self.y_ref = 0
 
-    def initalize(self, world):
+    def initalize(self, world) -> None:
         factory = ObjectFactory()
         commands = self.string.split('\n')
         for command in commands:

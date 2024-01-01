@@ -3,7 +3,7 @@ import pygame
 import sys
 from game_components.world import World
 
-def check_for_quit():
+def check_for_quit() -> None:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()

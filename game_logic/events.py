@@ -4,42 +4,43 @@ import sys
 sys.path.append('..')
 from game_components.actors import *
 from game_components.game_objects import *
+from typing import List
 
 class Event(ABC):
-    def __init__(self, obj1, obj2):
+    def __init__(self, obj1: GameObject, obj2: GameObject):
         self.obj1 = obj1
         self.obj2 = obj2
 
     @abstractmethod
-    def handle(self):
+    def handle(self) -> None:
         pass
 
 class CollisionEvent(Event):
     @property
-    def actor(self):
+    def actor(self) -> Actor:
         return self.obj1
     
     @property
-    def object(self):
+    def object(self) -> pygame.Rect:
         return self.obj2.rectangle
 
-    def hit_from_bottom(self):
+    def hit_from_bottom(self) -> None:
         self.actor.y = self.object.top - self.actor.height
         self.actor.speed_y = 0
 
-    def hit_from_top(self):
+    def hit_from_top(self) -> None:
         self.actor.y = self.object.bottom
         self.actor.speed_y = 0
 
-    def hit_from_left(self):
+    def hit_from_left(self) -> None:
         self.actor.x = self.object.right
         self.actor.speed_x = 0
 
-    def hit_from_right(self):
+    def hit_from_right(self) -> None:
         self.actor.x = self.object.left - self.actor.width
         self.actor.speed_x = 0
 
-    def handle(self):
+    def handle(self) -> None:
         self.bottom = (self.actor.rectangle.bottom > self.object.top) and (self.actor.prev_rectangle.bottom <= self.object.top)
         self.top = (self.actor.rectangle.top < self.object.bottom) and (self.actor.prev_rectangle.top >= self.object.bottom)
         self.right = (self.actor.rectangle.right > self.object.left) and (self.actor.prev_rectangle.right <= self.object.left)
@@ -49,8 +50,8 @@ class CollisionEvent(Event):
         if self.left: self.hit_from_left()
         if self.right: self.hit_from_right()
 
-class EventDispatcher:
-    def __init__(self):
+class EventDispatcher:    
+    def __init__(self) -> None:
         mario_event_dict = {
             Ground.__name__: MarioHitsGroundEvent,
             Coin.__name__: MarioHitsCoinEvent,
@@ -76,28 +77,28 @@ class EventDispatcher:
             Bomb.__name__: bomb_event_dict
         }
 
-    def dispatch(self, actor, object):
+    def dispatch(self, actor: Actor, object: GameObject) -> Event:
         actor_event_dict = self.nested_event_dict[actor.__class__.__name__]
         event = actor_event_dict[object.__class__.__name__](actor, object)
         return event
 
-    def register_actor(self, actor_class, actor_event_dict):
+    def register_actor(self, actor_class: type, actor_event_dict: dict) -> None:
         self.nested_event_dict[actor_class] = actor_event_dict
 
-    def register_event(self, actor_class, object_class, event_class):
+    def register_event(self, actor_class: type, object_class: type, event_class: type) -> None:
         self.nested_event_dict[actor_class][object_class] = event_class
     
 
 class EventManager:
-    def __init__(self, objects, actors):
+    def __init__(self, objects: List[GameObject], actors: List[Actor]):
         self.events = []
         self.actors = actors
         self.objects = objects
 
-    def add_event(self, event):
+    def add_event(self, event: Event) -> None:
         self.events.append(event)
     
-    def remove_from_world(self, obj):
+    def remove_from_world(self, obj: GameObject) -> None:
         if isinstance(obj, Actor):
             self.actors.remove(obj)
         elif isinstance(obj, GameObject):
@@ -105,7 +106,7 @@ class EventManager:
         else:
             raise ValueError('Event returned invalid object')
     
-    def handle_events(self):
+    def handle_events(self) -> str:
         for event in self.events:
             obj = event.handle()
             if isinstance(event, MarioHitsDoorEvent):
@@ -119,9 +120,10 @@ class EventManager:
 
 
 class MarioHitsGroundEvent(CollisionEvent):    
-    def hit_from_bottom(self):
+    def hit_from_bottom(self) -> None:
         super().hit_from_bottom()
         self.actor.jump_energy = 27.5
+
         if self.actor.speed_x > 0.5:
             self.actor.speed_x -= 0.5
         elif self.actor.speed_x < -0.5:
@@ -130,11 +132,11 @@ class MarioHitsGroundEvent(CollisionEvent):
             self.actor.speed_x = 0
 
 class ActorHitsBoundary(Event):
-    def handle(self):
+    def handle(self) -> GameObject:
         return self.obj1
 
 class MarioHitsGhostEvent(CollisionEvent):
-    def handle(self):
+    def handle(self) -> GameObject:
         super().handle()
         if self.bottom:
             return self.obj2
@@ -144,7 +146,7 @@ class MarioHitsGhostEvent(CollisionEvent):
             if self.actor.lifes == 0:
                 return self.actor
     
-    def push_mario(self):
+    def push_mario(self) -> None:
         dx = self.actor.x - self.obj2.x
         dy = self.actor.y - self.obj2.y
         d = sqrt(dx**2 + dy**2)
@@ -154,33 +156,33 @@ class MarioHitsGhostEvent(CollisionEvent):
         
 
 class MarioHitsCoinEvent(Event):    
-    def handle(self):
+    def handle(self) -> GameObject:
         self.obj1.coins += 1
         return self.obj2
 
 class MarioHitsCherryEvent(Event):
-    def handle(self):
+    def handle(self) -> GameObject:
         self.obj1.lifes += 1
         return self.obj2
 
 class MarioHitsChestEvent(Event):
-    def handle(self):
+    def handle(self) -> GameObject:
         self.obj1.coins += 10
         return self.obj2
     
 class MarioHitsDoorEvent(Event):
-    def handle(self):
+    def handle(self) -> None:
         return 
     
 class MarioHitsWineEvent(Event):
-    def handle(self):
+    def handle(self) -> GameObject:
         self.obj1.lifes += 1
         self.obj1.stunned_time += 100
         self.obj1.fall_asleep()
         return self.obj2
     
 class MarioHitsBombEvent(Event):
-    def handle(self):
+    def handle(self)-> GameObject:
         self.obj1.lifes -= 1
         self.obj1.stunned_time += 100
         self.obj1.fall_asleep()
@@ -188,7 +190,7 @@ class MarioHitsBombEvent(Event):
         
         return self.obj2
     
-    def push_mario(self):
+    def push_mario(self) -> None:        
         dx = self.obj1.x - self.obj2.x
         dy = self.obj1.y - self.obj2.y
         d = sqrt(dx**2 + dy**2)

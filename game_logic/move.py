@@ -13,20 +13,20 @@ class MoveStrategy(ABC):
 class ControlMoveStrategy(MoveStrategy):
     _instance = None
 
-    def __init__(self):
+    def __init__(self) -> None:
         if ControlMoveStrategy._instance is not None:
             raise Exception("Only one instance of ControlMoveStrategy can be created.")
         super().__init__()
         ControlMoveStrategy._instance = self
 
     @classmethod
-    def get_instance(cls):
+    def get_instance(cls) -> 'ControlMoveStrategy':
         if not cls._instance:
             cls._instance = ControlMoveStrategy()
         return cls._instance
 
 
-    def propose_move(self, actor):
+    def propose_move(self, actor) -> tuple:
     
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
@@ -43,12 +43,12 @@ class ControlMoveStrategy(MoveStrategy):
 
 
 class BackAndForthMoveStrategy(MoveStrategy):
-    def __init__(self, time_swap = 50):
+    def __init__(self, time_swap = 50) -> None:
         super().__init__()
         self.timer = time_swap
         self.time_swap = time_swap
 
-    def propose_move(self, actor):
+    def propose_move(self, actor) -> tuple:
         self.timer -= 1
         if self.timer == 0:
                 self.timer = self.time_swap
@@ -59,11 +59,11 @@ class BackAndForthMoveStrategy(MoveStrategy):
         return x_new, y_new 
 
 class ChaseMoveStrategy(MoveStrategy):
-    def __init__(self, mario):
+    def __init__(self, mario) -> None:
         super().__init__()
         self.mario = mario
     
-    def propose_move(self, actor):
+    def propose_move(self, actor) -> tuple:
         x_mario = self.mario.x
         x_actor = actor.x
         if abs(x_mario - x_actor) < 300:
@@ -84,7 +84,7 @@ dispatch_move_strategy = {
     'chase': ChaseMoveStrategy
 }
 
-def get_move_strategy(move_strategy, mario = None):
+def get_move_strategy(move_strategy, mario = None) -> MoveStrategy:
     move_strategy_class = dispatch_move_strategy.get(move_strategy)
     if move_strategy_class is None:
         raise ValueError('Invalid move strategy')
