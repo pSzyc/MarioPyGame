@@ -185,6 +185,7 @@ class MarioHitsBombEvent(Event):
         self.obj1.stunned_time += 100
         self.obj1.fall_asleep()
         self.push_mario()
+        
         return self.obj2
     
     def push_mario(self):

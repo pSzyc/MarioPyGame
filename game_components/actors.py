@@ -150,15 +150,17 @@ class Mario(Actor):
         self.y = y_new
     
     def fall_asleep(self):
-        self.isSleeping = True
-        self.image = pygame.transform.rotate(self.image, 90)
-        self.width, self.height = self.height, self.width
+        if not self.isSleeping:
+            self.isSleeping = True
+            self.image = pygame.transform.rotate(self.image, 90)
+            self.width, self.height = self.height, self.width
     
     def wake_up(self):
-        self.isSleeping = False
-        self.speed_y = -20
-        self.image = pygame.transform.rotate(self.image, -90)
-        self.width, self.height = self.height, self.width
+        if self.isSleeping:
+            self.isSleeping = False
+            self.speed_y = -20
+            self.image = pygame.transform.rotate(self.image, -90)
+            self.width, self.height = self.height, self.width
 
 class Bomb(Actor):
     def __init__(self, x, y, speed_x, speed_y, move_strategy: MoveStrategy, image, width=40, height=40):
