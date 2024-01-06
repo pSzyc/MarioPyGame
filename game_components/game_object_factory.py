@@ -46,7 +46,8 @@ class GhostMaker(ObjectMaker):
     def create(self) -> Ghost:
         image = FromFileLoader(self.filename).load_image(self.width, self.height)
         image = pygame.transform.flip(image, True, False)
-        move_strategy_instance = get_move_strategy(self.move_strategy, self.mario)
+        move_strategy_dispatcher = MoveStrategyDispatcher()
+        move_strategy_instance = move_strategy_dispatcher.get_move_strategy(self.move_strategy, self.mario)
         return Ghost(self.x, self.y, self.speed_x, self.speed_y, move_strategy_instance, image, self.width, self.height)
 
 class CoinMaker(ObjectMaker):
@@ -146,7 +147,8 @@ class BombMaker(ObjectMaker):
 
     def create(self) -> Bomb:
         image = FromFileLoader(self.filename).load_image(self.width, self.height)
-        move_strategy_instance = get_move_strategy(self.move_strategy, None)
+        move_strategy_dispatcher = MoveStrategyDispatcher()
+        move_strategy_instance = move_strategy_dispatcher.get_move_strategy(self.move_strategy, None)
         return Bomb(self.x, self.y, self.speed_x, self.speed_y, move_strategy_instance, image, self.width, self.height)
 
 class BoundaryMaker(ObjectMaker):

@@ -78,19 +78,25 @@ class ChaseMoveStrategy(MoveStrategy):
         y_new = actor.y + actor.speed_y
         return x_new, y_new
 
-dispatch_move_strategy = {
-    'control': ControlMoveStrategy,
-    'back_and_forth': BackAndForthMoveStrategy,
-    'chase': ChaseMoveStrategy
-}
 
-def get_move_strategy(move_strategy, mario = None) -> MoveStrategy:
-    move_strategy_class = dispatch_move_strategy.get(move_strategy)
-    if move_strategy_class is None:
-        raise ValueError('Invalid move strategy')
-    if move_strategy_class == ChaseMoveStrategy:
-        if mario is None:
-            raise ValueError('Mario must be provided for chase strategy')
-        return move_strategy_class(mario)
-    else:
-        return move_strategy_class()
+
+class MoveStrategyDispatcher:
+    def __init__(self) -> None:
+        self.dispatch_move_strategy = {
+            'control': ControlMoveStrategy,
+            'back_and_forth': BackAndForthMoveStrategy,
+            'chase': ChaseMoveStrategy
+        }
+    def register_move_strategy(self, move_strategy_name: str, move_strategy_class: MoveStrategy) -> None:
+        self.dispatch_move_strategy[move_strategy_name] = move_strategy_class
+
+    def get_move_strategy(self, move_strategy_name: str, mario = None) -> None:
+        move_strategy_class = self.dispatch_move_strategy.get(move_strategy_name)
+        if move_strategy_class is None:
+            raise ValueError('Invalid move strategy')
+        if move_strategy_class == ChaseMoveStrategy:
+            if mario is None:
+                raise ValueError('Mario must be provided for chase strategy')
+            return move_strategy_class(mario)
+        else:
+            return move_strategy_class()
