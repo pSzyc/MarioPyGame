@@ -4,14 +4,12 @@ sys.path.append('..')
 from game_logic.move import *
 from game_components.game_object_factory import *
 from game_logic.events import EventDispatcher, EventManager
-from utilities.initalize import RefrenceFromStringInitalizer
 from typing import List, Optional, Tuple
 import pygame
 import sys
 from game_logic.move import *
 from game_components.game_object_factory import *
 from game_logic.events import EventDispatcher, EventManager
-from utilities.initalize import RefrenceFromStringInitalizer
 
 class World:
     def __init__(self):
@@ -28,10 +26,6 @@ class World:
     def initalize(self, screen_width: int = 800, screen_height: int = 600, filename: str = 'resources/board.txt') -> None:
         pygame.init()
         self.screen = pygame.display.set_mode((screen_width, screen_height))
-        with open(filename, 'r') as f:
-            board = f.read()
-        initalizer = RefrenceFromStringInitalizer(board)
-        initalizer.initalize(world=self)
 
     def add_ground(self, ground: Ground) -> None:
         self.ground_objects.append(ground)

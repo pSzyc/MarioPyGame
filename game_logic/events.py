@@ -118,6 +118,26 @@ class EventManager:
         self.events = []
         return 'Continue'
 
+class NewEventManager:
+    def __init__()
+
+    def handle_events(self, world) -> str:
+        for actor in world.actors:
+            if actor == self.mario:
+                continue
+            if self.mario.rectangle.colliderect(actor.rectangle):
+                
+        for obj in self.objects:
+            if self.mario.rectangle.colliderect(obj.rectangle):
+                event_manager.add_event(self.event_dispatcher.dispatch(self.mario, obj))
+
+        for actor in self.actors:
+            for ground in self.ground_objects:
+                if actor.rectangle.colliderect(ground.rectangle):
+                    event_manager.add_event(self.event_dispatcher.dispatch(actor, ground))
+        
+
+        return 'Continue'
 
 class MarioHitsGroundEvent(CollisionEvent):    
     def hit_from_bottom(self) -> None:

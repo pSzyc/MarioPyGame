@@ -4,6 +4,7 @@ sys.path.append('..')
 from game_components.game_object_factory import ObjectFactory
 from game_components.actors import *
 from game_components.game_objects import *
+from game_components.world import World
 
 class Initalizer(ABC):
     def __init__(self):
@@ -12,49 +13,27 @@ class Initalizer(ABC):
     @abstractmethod
     def initalize(self):
         pass
-
-class FromStringInitalizer(Initalizer):
-    def __init__(self, string) -> None:
-        super().__init__()
-        self.string = string
-
-    def initalize(self, world) -> None:
-        factory = ObjectFactory()
-        commands = self.string.split('\n')
-        for command in commands:
-            command = command.split(' ')
-            if command[0] == '//': continue
-            obj_class = command[0]
-            obj_args = command[1:]
-            if 'chase' in obj_args:
-                obj_args.append(world.mario)
-            obj = factory.create(obj_class, obj_args)
-            if obj_class == Mario.__name__:
-                world.mario = obj
-            if isinstance(obj, Actor):
-                world.add_actor(obj)
-            elif isinstance(obj, Ground):
-                world.add_ground(obj)
-            elif isinstance(obj, GameObject):
-                world.add_object(obj)
         
 
-class RefrenceFromStringInitalizer(Initalizer):
-    def __init__(self, string) -> None:
-        self.string = string
+class RefrenceFromFileInitalizer(Initalizer):
+    def __init__(self, filename : str) -> None:
+        self.filename = filename
         self.x_ref = 0
         self.y_ref = 0
 
-    def initalize(self, world) -> None:
+    def initalize(self) -> None:
+        with open(self.filename, 'r') as f:
+            content = f.read()
         factory = ObjectFactory()
-        commands = self.string.split('\n')
+        world = World()
+        world.initalize()
+        commands = content.split('\n')
         for command in commands:
             command = command.split(' ')
             if command[0] == '//': continue
             obj_class = command[0]
             obj_args = command[1:]
             
-           
             if obj_class == 'Ground':
                 # setting frame of refrence
                 self.x_ref = int(obj_args[0])
@@ -75,3 +54,4 @@ class RefrenceFromStringInitalizer(Initalizer):
                 world.mario = obj
             
             world.add_new(obj)
+        return world

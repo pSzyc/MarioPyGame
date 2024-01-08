@@ -10,11 +10,11 @@ class ImageLoader(ABC):
         pass
 
 class FromFileLoader(ImageLoader):
-    def __init__(self, filename) -> None:
+    def __init__(self, filename: str) -> None:
         super().__init__()
         self.filename = filename
 
-    def load_image(self, width, height) -> pygame.Surface:
+    def load_image(self, width: int, height: int) -> pygame.Surface:
         image = pygame.image.load(self.filename)
         image = pygame.transform.scale(image, (width, height))
         image.convert()

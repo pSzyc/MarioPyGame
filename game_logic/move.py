@@ -8,7 +8,6 @@ class MoveStrategy(ABC):
     @abstractmethod
     def propose_move(self):
         pass
-    
 
 class ControlMoveStrategy(MoveStrategy):
     _instance = None
@@ -77,8 +76,6 @@ class ChaseMoveStrategy(MoveStrategy):
         
         y_new = actor.y + actor.speed_y
         return x_new, y_new
-
-
 
 class MoveStrategyDispatcher:
     def __init__(self) -> None:

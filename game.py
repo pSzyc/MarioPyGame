@@ -2,6 +2,7 @@
 import pygame
 import sys
 from game_components.world import World
+from utilities.initalize import RefrenceFromFileInitalizer
 
 def check_for_quit() -> None:
     for event in pygame.event.get():
@@ -10,8 +11,8 @@ def check_for_quit() -> None:
             sys.exit() 
 
 if __name__ == '__main__':
-    world = World()
-    world.initalize()
+    initalizer = RefrenceFromFileInitalizer('resources/board.txt')
+    world = initalizer.initalize()
     clock = pygame.time.Clock()
 
     while True:
