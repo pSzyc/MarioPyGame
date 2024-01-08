@@ -119,24 +119,36 @@ class EventManager:
         return 'Continue'
 
 class NewEventManager:
-    def __init__()
+    def __init__(self, world):
+        self.world = world
+        self.event_dispatcher = EventDispatcher()
+        self.events = []
 
-    def handle_events(self, world) -> str:
+    def collect_events(self, world) -> str:
         for actor in world.actors:
             if actor == self.mario:
                 continue
             if self.mario.rectangle.colliderect(actor.rectangle):
-                
+                self.events.append(self.event_dispatcher.dispatch(self.mario, actor))
         for obj in self.objects:
             if self.mario.rectangle.colliderect(obj.rectangle):
-                event_manager.add_event(self.event_dispatcher.dispatch(self.mario, obj))
+                self.events.append(self.event_dispatcher.dispatch(self.mario, obj))
 
         for actor in self.actors:
             for ground in self.ground_objects:
                 if actor.rectangle.colliderect(ground.rectangle):
-                    event_manager.add_event(self.event_dispatcher.dispatch(actor, ground))
+                    self.events.append(self.event_dispatcher.dispatch(actor, ground))
         
-
+    def handle_events(self) -> str:
+        for event in self.events:
+            obj = event.handle()
+            if isinstance(event, MarioHitsDoorEvent):
+                return 'Win'
+            elif obj:
+                self.remove_from_world(obj)
+                if isinstance(obj, Mario):
+                    return 'Lose'
+        self.events = []
         return 'Continue'
 
 class MarioHitsGroundEvent(CollisionEvent):    
