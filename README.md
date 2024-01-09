@@ -1,3 +1,7 @@
+## Description
+
+Game for python object oriented programming classes (POOP)
+
 ## Prerequisites
 
 Before you begin, ensure you have installed the latest version of `pygame`:
