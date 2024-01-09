@@ -11,18 +11,20 @@ class Initalizer(ABC):
         pass
 
     @abstractmethod
-    def initalize(self):
+    def initalize(self) -> World:
         pass
         
 
 class RefrenceFromFileInitalizer(Initalizer):
-    def __init__(self, filename : str) -> None:
-        self.filename = filename
-        self.x_ref = 0
-        self.y_ref = 0
 
-    def initalize(self) -> None:
-        with open(self.filename, 'r') as f:
+    __slots__ = ['_filename', '_x_ref', '_y_ref']
+    def __init__(self, filename : str) -> None:
+        self._filename = filename
+        self._x_ref = 0
+        self._y_ref = 0
+
+    def initalize(self) -> World:
+        with open(self._filename, 'r') as f:
             content = f.read()
         factory = ObjectFactory()
         world = World()
@@ -36,12 +38,12 @@ class RefrenceFromFileInitalizer(Initalizer):
             
             if obj_class == 'Ground':
                 # setting frame of refrence
-                self.x_ref = int(obj_args[0])
-                self.y_ref = int(obj_args[1])
+                self._x_ref = int(obj_args[0])
+                self._y_ref = int(obj_args[1])
             else:
                 # new coordinates for non ground objects
-                obj_args[0] = str(int(obj_args[0]) + self.x_ref)
-                obj_args[1] = str(int(obj_args[1]) + self.y_ref)
+                obj_args[0] = str(int(obj_args[0]) + self._x_ref)
+                obj_args[1] = str(int(obj_args[1]) + self._y_ref)
             
             if 'chase' in obj_args:
                 if world.mario:

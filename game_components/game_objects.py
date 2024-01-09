@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 GREEN = (34, 139, 34)
 
 class GameObject(ABC):
+    __slots__ = ['_x', '_y', '_width', '_height', '_image']
     def __init__(self, x: int, y: int, width: int, height: int, image: pygame.Surface):
         self._x = x
         self._y = y

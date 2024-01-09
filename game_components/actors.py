@@ -6,14 +6,31 @@ from game_logic.move import MoveStrategy
 from game_components.game_objects import GameObject
 
 class Actor(GameObject):
+    __slots__ = ['_speed_x', '_speed_y', '_x_prev', '_y_prev', '_move_strategy', '_facing_right']
     def __init__(self, x: int, y: int, speed_x: float, speed_y: float, move_strategy: MoveStrategy, width: int, height: int, image: pygame.Surface) -> None:
         super().__init__(x, y, width, height, image)
         self._speed_x = speed_x
         self._speed_y = speed_y
-        self.x_prev = x
-        self.y_prev = y
+        self._x_prev = x
+        self._y_prev = y
         self._move_strategy = move_strategy
         self._facing_right = True
+
+    @property
+    def x_prev(self) -> int:
+        return self._x_prev
+    
+    @x_prev.setter
+    def x_prev(self, value: int) -> None:
+        self._x_prev = value
+    
+    @property
+    def y_prev(self) -> int:
+        return self._y_prev
+    
+    @y_prev.setter
+    def y_prev(self, value: int) -> None:
+        self._y_prev = value
 
     @property
     def facing_right(self) -> bool:
@@ -85,26 +102,67 @@ class Ghost(Actor):
         screen.blit(self.image, draw_rect)
 
 class Mario(Actor):
+    __slots__ = ['_speed', '_jump_energy', '_lifes', '_coins', '_stunned_time', '_isSleeping']
     def __init__(self, x: int, y: int, speed_x: float, speed_y: float, move_strategy: MoveStrategy, image: pygame.Surface, width: int = 40, height: int = 60) -> None:
         super().__init__(x, y, speed_x, speed_y, move_strategy, width, height, image)
-        self.speed = 7.5
-        self.jump_energy = 0
-        self.lifes = 3
-        self.coins = 0
-        self.stunned_time = 0
-        self.isSleeping = False
+        self._speed = 7.5
+        self._jump_energy = 0
+        self._lifes = 3
+        self._coins = 0
+        self._stunned_time = 0
+        self._isSleeping = False
+
+    @property
+    def jump_energy(self) -> int:
+        return self._jump_energy
+    
+    @jump_energy.setter
+    def jump_energy(self, value: int) -> None:
+        self._jump_energy = value
+        
+    @property
+    def lifes(self) -> int:
+        return self._lifes
+    
+    @lifes.setter
+    def lifes(self, value: int) -> None:
+        self._lifes = value
+    
+    @property
+    def coins(self) -> int:
+        return self._coins
+    
+    @coins.setter
+    def coins(self, value: int) -> None:
+        self._coins = value
+
+    @property
+    def stunned_time(self) -> int:
+        return self._stunned_time
+    
+    @stunned_time.setter
+    def stunned_time(self, value: int) -> None:
+        self._stunned_time = value
+
+    @property
+    def isSleeping(self) -> bool:
+        return self._isSleeping
+    
+    @isSleeping.setter
+    def isSleeping(self, value: bool) -> None: 
+        self._isSleeping = value
 
     def on_turn(self, isRight: bool) -> None:
         if self.facing_right != isRight:
             self.facing_right = not self.facing_right
             self.image = pygame.transform.flip(self.image, True, False)
-        self.speed_x += 2 * (isRight - 0.5) * self.speed
+        self.speed_x += 2 * (isRight - 0.5) * self._speed
         
         # clip speed
-        if self.speed_x > self.speed:
-            self.speed_x = self.speed
-        elif self.speed_x < -self.speed:
-            self.speed_x = -self.speed
+        if self.speed_x > self._speed:
+            self.speed_x = self._speed
+        elif self.speed_x < -self._speed:
+            self.speed_x = -self._speed
 
     def draw(self, screen: pygame.Surface, x_offset: int, y_offset: int):
         # Draw Mario image

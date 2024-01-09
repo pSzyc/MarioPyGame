@@ -7,9 +7,18 @@ from game_components.game_objects import *
 from typing import List
 
 class Event(ABC):
+    __slots__ = ['_obj1', '_obj2']
     def __init__(self, obj1: GameObject, obj2: GameObject):
-        self.obj1 = obj1
-        self.obj2 = obj2
+        self._obj1 = obj1
+        self._obj2 = obj2
+    
+    @property
+    def obj1(self) -> GameObject:
+        return self._obj1
+    
+    @property
+    def obj2(self) -> GameObject:
+        return self._obj2
 
     @abstractmethod
     def handle(self) -> None:
@@ -50,7 +59,8 @@ class CollisionEvent(Event):
         if self.left: self.hit_from_left()
         if self.right: self.hit_from_right()
 
-class EventDispatcher:    
+class EventDispatcher:
+    __slots__ = ['_nested_event_dict']    
     def __init__(self) -> None:
         mario_event_dict = {
             Ground.__name__: MarioHitsGroundEvent,
@@ -71,85 +81,22 @@ class EventDispatcher:
             Ground.__name__: CollisionEvent,
             Boundary.__name__: ActorHitsBoundary,
         }
-        self.nested_event_dict = {
+        self._nested_event_dict = {
             Mario.__name__: mario_event_dict,
             Ghost.__name__: ghost_event_dict,
             Bomb.__name__: bomb_event_dict
         }
 
     def dispatch(self, actor: Actor, object: GameObject) -> Event:
-        actor_event_dict = self.nested_event_dict[actor.__class__.__name__]
+        actor_event_dict = self._nested_event_dict[actor.__class__.__name__]
         event = actor_event_dict[object.__class__.__name__](actor, object)
         return event
 
     def register_actor(self, actor_class: type, actor_event_dict: dict) -> None:
-        self.nested_event_dict[actor_class] = actor_event_dict
+        self._nested_event_dict[actor_class] = actor_event_dict
 
     def register_event(self, actor_class: type, object_class: type, event_class: type) -> None:
-        self.nested_event_dict[actor_class][object_class] = event_class
-    
-
-class EventManager:
-    def __init__(self, objects: List[GameObject], actors: List[Actor]):
-        self.events = []
-        self.actors = actors
-        self.objects = objects
-
-    def add_event(self, event: Event) -> None:
-        self.events.append(event)
-    
-    def remove_from_world(self, obj: GameObject) -> None:
-        if isinstance(obj, Actor):
-            self.actors.remove(obj)
-        elif isinstance(obj, GameObject):
-            self.objects.remove(obj)
-        else:
-            raise ValueError('Event returned invalid object')
-    
-    def handle_events(self) -> str:
-        for event in self.events:
-            obj = event.handle()
-            if isinstance(event, MarioHitsDoorEvent):
-                return 'Win'
-            elif obj:
-                self.remove_from_world(obj)
-                if isinstance(obj, Mario):
-                    return 'Lose'
-        self.events = []
-        return 'Continue'
-
-class NewEventManager:
-    def __init__(self, world):
-        self.world = world
-        self.event_dispatcher = EventDispatcher()
-        self.events = []
-
-    def collect_events(self, world) -> str:
-        for actor in world.actors:
-            if actor == self.mario:
-                continue
-            if self.mario.rectangle.colliderect(actor.rectangle):
-                self.events.append(self.event_dispatcher.dispatch(self.mario, actor))
-        for obj in self.objects:
-            if self.mario.rectangle.colliderect(obj.rectangle):
-                self.events.append(self.event_dispatcher.dispatch(self.mario, obj))
-
-        for actor in self.actors:
-            for ground in self.ground_objects:
-                if actor.rectangle.colliderect(ground.rectangle):
-                    self.events.append(self.event_dispatcher.dispatch(actor, ground))
-        
-    def handle_events(self) -> str:
-        for event in self.events:
-            obj = event.handle()
-            if isinstance(event, MarioHitsDoorEvent):
-                return 'Win'
-            elif obj:
-                self.remove_from_world(obj)
-                if isinstance(obj, Mario):
-                    return 'Lose'
-        self.events = []
-        return 'Continue'
+        self._nested_event_dict[actor_class][object_class] = event_class
 
 class MarioHitsGroundEvent(CollisionEvent):    
     def hit_from_bottom(self) -> None:
@@ -219,7 +166,6 @@ class MarioHitsBombEvent(Event):
         self.obj1.stunned_time += 100
         self.obj1.fall_asleep()
         self.push_mario()
-        
         return self.obj2
     
     def push_mario(self) -> None:        

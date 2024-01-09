@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+import sys
+sys.path.append('..')
 import pygame
 
 class MoveStrategy(ABC):
@@ -6,7 +8,7 @@ class MoveStrategy(ABC):
         pass
 
     @abstractmethod
-    def propose_move(self):
+    def propose_move(self) -> tuple[int, int]:
         pass
 
 class ControlMoveStrategy(MoveStrategy):
@@ -18,15 +20,7 @@ class ControlMoveStrategy(MoveStrategy):
         super().__init__()
         ControlMoveStrategy._instance = self
 
-    @classmethod
-    def get_instance(cls) -> 'ControlMoveStrategy':
-        if not cls._instance:
-            cls._instance = ControlMoveStrategy()
-        return cls._instance
-
-
-    def propose_move(self, actor) -> tuple:
-    
+    def propose_move(self, actor: 'Actor') -> tuple[int, int]:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
             actor.on_turn(isRight = False)
@@ -42,15 +36,17 @@ class ControlMoveStrategy(MoveStrategy):
 
 
 class BackAndForthMoveStrategy(MoveStrategy):
+
+    __slots__ = ['_timer', '_time_swap']
     def __init__(self, time_swap = 50) -> None:
         super().__init__()
-        self.timer = time_swap
-        self.time_swap = time_swap
+        self._timer = time_swap
+        self._time_swap = time_swap
 
-    def propose_move(self, actor) -> tuple:
-        self.timer -= 1
-        if self.timer == 0:
-                self.timer = self.time_swap
+    def propose_move(self, actor: 'Actor') -> tuple[int, int]:
+        self._timer -= 1
+        if self._timer == 0:
+                self._timer = self._time_swap
                 actor.on_turn(isRight = not actor.facing_right)
         x_new = actor.x + actor.speed_x
         y_new = actor.y + actor.speed_y
@@ -58,12 +54,14 @@ class BackAndForthMoveStrategy(MoveStrategy):
         return x_new, y_new 
 
 class ChaseMoveStrategy(MoveStrategy):
-    def __init__(self, mario) -> None:
+
+    __slots__ = ['_mario']
+    def __init__(self, mario: 'Mario') -> None:
         super().__init__()
-        self.mario = mario
+        self._mario = mario
     
-    def propose_move(self, actor) -> tuple:
-        x_mario = self.mario.x
+    def propose_move(self, actor) -> tuple[int, int]:
+        x_mario = self._mario.x
         x_actor = actor.x
         if abs(x_mario - x_actor) < 300:
             if x_mario < x_actor:
@@ -78,17 +76,19 @@ class ChaseMoveStrategy(MoveStrategy):
         return x_new, y_new
 
 class MoveStrategyDispatcher:
+    
+    __slots__ = ['_dispatch_move_strategy']
     def __init__(self) -> None:
-        self.dispatch_move_strategy = {
+        self._dispatch_move_strategy = {
             'control': ControlMoveStrategy,
             'back_and_forth': BackAndForthMoveStrategy,
             'chase': ChaseMoveStrategy
         }
     def register_move_strategy(self, move_strategy_name: str, move_strategy_class: MoveStrategy) -> None:
-        self.dispatch_move_strategy[move_strategy_name] = move_strategy_class
+        self._dispatch_move_strategy[move_strategy_name] = move_strategy_class
 
-    def get_move_strategy(self, move_strategy_name: str, mario = None) -> None:
-        move_strategy_class = self.dispatch_move_strategy.get(move_strategy_name)
+    def get_move_strategy(self, move_strategy_name: str, mario: 'Mario' = None) -> None:
+        move_strategy_class = self._dispatch_move_strategy.get(move_strategy_name)
         if move_strategy_class is None:
             raise ValueError('Invalid move strategy')
         if move_strategy_class == ChaseMoveStrategy:

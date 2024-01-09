@@ -1,8 +1,22 @@
 #!/usr/bin/python3
 import pygame
 import sys
-from game_components.world import World
 from utilities.initalize import RefrenceFromFileInitalizer
+from game_logic.game_manager import GameManager
+import time
+from game_components.world import World
+
+def end_game():
+    time.sleep(3)
+    pygame.quit()
+    sys.exit()
+
+def draw_message(world: World, message: str) -> None:
+    font = pygame.font.Font(None, 36)
+    text = font.render(message, True, (255, 255, 255))
+    text_rect = text.get_rect(center=(world.screen.get_width() // 2, world.screen.get_height() // 2))
+    world.screen.blit(text, text_rect)
+    pygame.display.update()
 
 def check_for_quit() -> None:
     for event in pygame.event.get():
@@ -11,22 +25,16 @@ def check_for_quit() -> None:
             sys.exit() 
 
 if __name__ == '__main__':
-    initalizer = RefrenceFromFileInitalizer('resources/board.txt')
-    world = initalizer.initalize()
+    world = RefrenceFromFileInitalizer('resources/board.txt').initalize()
+    game_manager = GameManager(world)
     clock = pygame.time.Clock()
-
     while True:
         check_for_quit()
-        world.gravity()
-        world.move_actors()
-        outcome = world.handle_collision()
-        world.draw()
+        outcome = game_manager.step()
         clock.tick(30)
         if outcome == 'Lose':
-            print('You lose')
-            pygame.quit()
-            sys.exit()
+            draw_message(world, "You lose")
+            end_game()
         elif outcome == 'Win':
-            print('You win')
-            pygame.quit()
-            sys.exit()
+            draw_message(world, 'You win')
+            end_game()
